@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "883249994710",
+    "firebase_url": "https://fir-app-60599.firebaseio.com",
+    "project_id": "fir-app-60599",
+    "storage_bucket": "fir-app-60599.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883249994710:android:01bdb56a562c5c3f9ca277",
+        "android_client_info": {
+          "package_name": "com.example.firebaseapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "883249994710-pqlv4d67q29vd2itiq49tdeseeiomajl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.firebaseapp",
+            "certificate_hash": "d96dd958e2e75c789211d473d4a3290411483a90"
+          }
+        },
+        {
+          "client_id": "883249994710-p4b9ia8994diaa3dpaa6c39bcdkm1mub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGqo5DmnlJ3fCq4gAE2k3LUlHOrelQ5uY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "883249994710-p4b9ia8994diaa3dpaa6c39bcdkm1mub.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883249994710:android:27d56449954d1dd39ca277",
+        "android_client_info": {
+          "package_name": "com.example.myProject_HealthyRecipesApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "883249994710-n9e362iqf1d1ev7mlu5hb2agk63g0cbl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myProject_HealthyRecipesApp",
+            "certificate_hash": "3c7ed9b95a2a0831188f904ac2eb1f4bf9ebaa28"
+          }
+        },
+        {
+          "client_id": "883249994710-p4b9ia8994diaa3dpaa6c39bcdkm1mub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGqo5DmnlJ3fCq4gAE2k3LUlHOrelQ5uY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "883249994710-p4b9ia8994diaa3dpaa6c39bcdkm1mub.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

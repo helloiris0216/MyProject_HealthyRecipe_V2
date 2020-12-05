@@ -1,4 +1,4 @@
-package com.example.myproject;
+package com.example.myProject_HealthyRecipesApp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
