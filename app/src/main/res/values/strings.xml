@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">myProject_HealthyRecipesApp</string>
+
+    <string-array name="arr_meal">
+        <item>早餐</item>
+        <item>午餐</item>
+        <item>晚餐</item>
+        <item>點心</item>
+    </string-array>
+
 </resources>
