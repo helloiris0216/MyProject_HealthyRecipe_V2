@@ -12,8 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -23,7 +21,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -36,7 +33,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -47,7 +43,7 @@ import java.io.ByteArrayOutputStream;
 //TODO:使用者點選bottom navigation中的user，會跳至此頁面
 public class UserInfoActivity extends AppCompatActivity {
 
-    private ImageView btnIv;
+    private ImageView iv;
     private EditText etEmail, etPsw;
     private Switch switchPsw;
     private Button btnLogin, btnRegester, btnLogout;
@@ -63,8 +59,8 @@ public class UserInfoActivity extends AppCompatActivity {
     private Context context;
 
 
-    //private StorageReference mStorageRef;
 
+    //TODO:設定初始值
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +72,6 @@ public class UserInfoActivity extends AppCompatActivity {
         ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
 
-        mStorageRef = FirebaseStorage.getInstance().getReference();
 
 
         findViews();
@@ -84,8 +79,11 @@ public class UserInfoActivity extends AppCompatActivity {
 
         //TODO:取得firebase的console:https://fir-app-60599.firebaseio.com/class
         //所有的方法都放在library內，要建立物件來使用這些方法
+        mStorageRef = FirebaseStorage.getInstance().getReference();
         authControl = FirebaseAuth.getInstance();
         Log.d(TAG, "authControl:" + authControl);
+
+
     }
 
     //TODO:設定action bar上的返回鍵 2
@@ -100,7 +98,8 @@ public class UserInfoActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     } //end onOptionsItemSelected()
 
-    //TODO:監聽switch & button
+
+    //TODO:setListener()
     private void setListener() {
         switchPsw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -120,12 +119,13 @@ public class UserInfoActivity extends AppCompatActivity {
         btnLogout.setOnClickListener(new MyButton());
         btnRegester.setOnClickListener(new MyButton());
 
-        btnIv.setOnClickListener(new MyButton());
+        iv.setOnClickListener(new MyButton());
     } //end setListener()
+
 
     //TODO:findViewById()
     private void findViews() {
-        btnIv = (ImageView) findViewById(R.id.iv);
+        iv = (ImageView) findViewById(R.id.iv);
 
         etEmail = (EditText) findViewById(R.id.editText_email);
         etPsw = (EditText) findViewById(R.id.editText_psw);
@@ -144,6 +144,8 @@ public class UserInfoActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+
+                //登入
                 case R.id.btn_login:
                     Toast.makeText(UserInfoActivity.this, "登入成功", Toast.LENGTH_SHORT).show();
                     //如果使用者沒有輸入帳號與密碼，就跳出吐司
@@ -155,7 +157,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         String email = etEmail.getText().toString();
                         String psw = etPsw.getText().toString();
 
-                        //TODO:currentUser,因為firebase一次只能一個人登入，所以如果有人登入firebase，就將他登出(強迫上一位使用者登出)。
+                        //currentUser,因為firebase一次只能一個人登入，所以如果有人登入firebase，就將他登出(強迫上一位使用者登出)。
                         currentUser = authControl.getCurrentUser();
                         if (currentUser != null) {
                             authControl.signOut();
@@ -171,6 +173,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
                                             //登入後取得使用者的資料
                                             user = authControl.getCurrentUser();
+                                            //TODO[未完成]:使用者登入後將照片從firebase上抓下來並顯示在imageView
 
                                         } else {
                                             Toast.makeText(UserInfoActivity.this, "登入失敗", Toast.LENGTH_SHORT).show();
@@ -182,6 +185,7 @@ public class UserInfoActivity extends AppCompatActivity {
                     } //end case R.id.button_login - if
                     break;
 
+                //登出
                 case R.id.btn_logout:
                     Toast.makeText(UserInfoActivity.this, "登出", Toast.LENGTH_SHORT).show();
                     //如果現在有使用者登入的話，按下登出鈕就登出
@@ -195,6 +199,7 @@ public class UserInfoActivity extends AppCompatActivity {
                     } //end button_logout
                     break;
 
+                //註冊
                 case R.id.btn_register:
                     if (etEmail.length() == 0 || etPsw.length() == 0) {
                         Toast.makeText(UserInfoActivity.this, "請輸入帳號密碼", Toast.LENGTH_SHORT).show();
@@ -237,7 +242,7 @@ public class UserInfoActivity extends AppCompatActivity {
     } //end MyButton()
 
 
-//    //TODO:建立存取使用者的資料並顯示在畫面上的自訂方法
+//    //TODO[未解決]:建立存取使用者的資料(照片)並顯示在畫面上的自訂方法
 //    private void DisplayUser() {
 //        //存取資料
 //        String name = user.getDisplayName();
@@ -259,6 +264,16 @@ public class UserInfoActivity extends AppCompatActivity {
 
     //TODO:取得使用者的拍照權限
     @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            theImage = (Bitmap) data.getExtras().get("data");
+            iv.setImageBitmap(theImage);
+        }
+    }   //end onActivityResult()
+
+    //當使用者按下同意就跑這個函數
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_CAMERA_PERMISSION_CODE) {
@@ -272,59 +287,67 @@ public class UserInfoActivity extends AppCompatActivity {
         }
     }   //end onRequestPermissionsResult()
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            theImage = (Bitmap) data.getExtras().get("data");
-            btnIv.setImageBitmap(theImage);
-        }
-    }   //end onActivityResult()
 
 
+    //TODO:使用者按下同意拍照後，進行拍照，上傳，將照片顯示在iv上的動作
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void button_press(View v) {
+        Toast.makeText(context, "拍照", Toast.LENGTH_SHORT).show();
 
+        //確認使用者是否按下同意
         if (this.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            this.requestPermissions(new String[]{Manifest.permission.CAMERA,}, MY_CAMERA_PERMISSION_CODE);
+            String[] permission = {Manifest.permission.CAMERA};
+            this.requestPermissions(permission, MY_CAMERA_PERMISSION_CODE);
+
+
         } else {
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             this.startActivityForResult(cameraIntent, CAMERA_REQUEST);
-        }
+
+            //將使用者的照片上傳到雲端
+            Boolean isTook;
+            isTook = true;
+            if (isTook) {
+                Toast.makeText(context, "upload....", Toast.LENGTH_SHORT).show();
 
 
-        //將使用者的照片上傳到雲端
+                //將ImageView 中的圖片化為  byte 陣列
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+                //將照片壓縮到 byteArray
+                theImage.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                //final long total = blob.length;
+                byte[] blob = stream.toByteArray(); //將壓縮檔轉成byte[]
+
+                //將照片存在子節點
+                StorageReference leaf = mStorageRef.child("user_pic.jpg");
+                UploadTask task = leaf.putBytes(blob);
+                task.addOnSuccessListener(
+                        new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Toast.makeText(context, "upload....成功", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
+                task.addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(context, "upload....失敗", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
+                isTook = false;
+            } //end if(isTook)
+
+        } //end if(checkSelfPermission)
+
        // busy.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "upload....", Toast.LENGTH_LONG).show();
 
 
-        //將ImageView 中的圖片化為  byte 陣列
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        byte[] blob;
-
-        blob = stream.toByteArray();
-        final long total = blob.length;
-        theImage.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
 
-        StorageReference leaf = mStorageRef.child("coffee.jpg");
-        UploadTask task = leaf.putBytes(blob);
-        task.addOnSuccessListener(
-                new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(context, "upload....成功", Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
-        task.addOnFailureListener(
-                new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "upload....失敗", Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
 //        task.addOnCompleteListener(
 //
 //                new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -341,16 +364,16 @@ public class UserInfoActivity extends AppCompatActivity {
 //                    }
 //                }
 //        );    //end addOnCompleteListener()
-
-        task.addOnProgressListener(
-                new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        long byte_to_go = taskSnapshot.getBytesTransferred();
-                        //Log.i("上傳", "送出 " + byte_to_go + " BYTEs");
-
-                        final double every_time_percent = (double) byte_to_go / total;
-                        Log.i("上傳", "送出 " + every_time_percent * 100 + " %");
+//
+//        task.addOnProgressListener(
+//                new OnProgressListener<UploadTask.TaskSnapshot>() {
+//                    @Override
+//                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+//                        long byte_to_go = taskSnapshot.getBytesTransferred();
+//                        //Log.i("上傳", "送出 " + byte_to_go + " BYTEs");
+//
+//                        final double every_time_percent = (double) byte_to_go / total;
+//                        Log.i("上傳", "送出 " + every_time_percent * 100 + " %");
 //                        MainActivity.this.runOnUiThread(
 //                                new Runnable() {
 //                                    @Override
@@ -359,14 +382,14 @@ public class UserInfoActivity extends AppCompatActivity {
 //                                    }
 //                                }
 //                        );
+//
+//                    }
+//                }
+//        );  //end addOnProgressListener()
 
-                    }
-                }
-        );  //end addOnProgressListener()
+    }   //end button_press()
 
-    }
-
-    //TODO:抓下使用者的大頭照
+    //TODO[未完成]:抓下使用者的大頭照
 
 
 }
