@@ -1,4 +1,7 @@
 package com.example.myProject_HealthyRecipesApp;
+//TODO:按下導覽列中的 "user" 會跳轉至此頁面，功能是讓使用者登入 & 登出用。
+//TODO:使用者輸入 email & psw ，按下 "登入按鈕" 後先檢查使用者的欄位是否都有輸入
+//TODO:都有輸入後，將 photo 從 firebase 下載至 imageView上顯示，並跳出吐司 : 哈囉，username
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +37,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -46,10 +48,10 @@ public class UserInfoActivity extends AppCompatActivity {
     private ImageView iv;
     private EditText etEmail, etPsw;
     private Switch switchPsw;
-    private Button btnLogin, btnRegester, btnLogout;
-    private FirebaseAuth authControl;
+    private Button btnLogin, btnRegister, btnLogout;
     private String TAG = "main";
-    private FirebaseUser user;
+    private FirebaseAuth authControl;
+
     private FirebaseUser currentUser;
 
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -68,6 +70,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
         context = this;
         setTitle("My Information");
+
         //TODO:設定action bar上的返回鍵 1
         ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
@@ -117,7 +120,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
         btnLogin.setOnClickListener(new MyButton());
         btnLogout.setOnClickListener(new MyButton());
-        btnRegester.setOnClickListener(new MyButton());
+        btnRegister.setOnClickListener(new MyButton());
 
         iv.setOnClickListener(new MyButton());
     } //end setListener()
@@ -133,7 +136,7 @@ public class UserInfoActivity extends AppCompatActivity {
         switchPsw = (Switch) findViewById(R.id.switch_psw);
 
         btnLogin = (Button) findViewById(R.id.btn_login);
-        btnRegester = (Button) findViewById(R.id.btn_register);
+        btnRegister = (Button) findViewById(R.id.btn_register);
         btnLogout = (Button) findViewById(R.id.btn_logout);
     }
 
@@ -147,7 +150,6 @@ public class UserInfoActivity extends AppCompatActivity {
 
                 //登入
                 case R.id.btn_login:
-                    Toast.makeText(UserInfoActivity.this, "登入成功", Toast.LENGTH_SHORT).show();
                     //如果使用者沒有輸入帳號與密碼，就跳出吐司
                     if (etEmail.length() == 0 || etPsw.length() == 0) {
                         Toast.makeText(UserInfoActivity.this, "Please fill field.", Toast.LENGTH_SHORT).show();
@@ -164,23 +166,25 @@ public class UserInfoActivity extends AppCompatActivity {
                         }
 
                         //使用帳號與密碼登入:signInWith，並監聽authControl
-                        authControl.signInWithEmailAndPassword(email, psw)
-                                .addOnCompleteListener(UserInfoActivity.this, new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(UserInfoActivity.this, "登入成功", Toast.LENGTH_SHORT).show();
+                        else {
+                            authControl.signInWithEmailAndPassword(email, psw)
+                                    .addOnCompleteListener(UserInfoActivity.this, new OnCompleteListener<AuthResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(UserInfoActivity.this, "登入成功", Toast.LENGTH_SHORT).show();
 
-                                            //登入後取得使用者的資料
-                                            user = authControl.getCurrentUser();
-                                            //TODO[未完成]:使用者登入後將照片從firebase上抓下來並顯示在imageView
+                                                //登入後取得使用者的資料
+                                                //FirebaseUser user = authControl.getCurrentUser();
+                                                //TODO[未完成]:使用者登入後將照片從firebase上抓下來並顯示在imageView
 
-                                        } else {
-                                            Toast.makeText(UserInfoActivity.this, "登入失敗", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(UserInfoActivity.this, "登入失敗", Toast.LENGTH_SHORT).show();
+                                            }
+
                                         }
-
-                                    }
-                                });
+                                    });
+                        }
 
                     } //end case R.id.button_login - if
                     break;
@@ -199,40 +203,15 @@ public class UserInfoActivity extends AppCompatActivity {
                     } //end button_logout
                     break;
 
+
                 //註冊
                 case R.id.btn_register:
-                    if (etEmail.length() == 0 || etPsw.length() == 0) {
-                        Toast.makeText(UserInfoActivity.this, "請輸入帳號密碼", Toast.LENGTH_SHORT).show();
-                        break;
-                    } else {
-                        //如果有輸入帳號與密碼，就將editText上的文字存放到變數email & psw中
-                        String email = etEmail.getText().toString();
-                        String psw = etPsw.getText().toString();
 
-                        //利用帳號與密碼進行註冊:createUser，並監聽authControl
-                        authControl.createUserWithEmailAndPassword(email, psw).addOnCompleteListener(UserInfoActivity.this
-                                , new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    Intent intent = new Intent(context, RegisterActivity.class);
+                    startActivity(intent);
 
-                                        //如果註冊成功
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(UserInfoActivity.this, "註冊成功", Toast.LENGTH_SHORT).show();
+                    break;
 
-                                            //取得使用者的帳號與密碼
-                                            //user = authControl.getCurrentUser();
-                                            //DisplayUser();  //自訂方法
-
-                                            //如果註冊失敗
-                                        } else {
-                                            Toast.makeText(UserInfoActivity.this, "註冊失敗", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }); //end Listener()
-                        break;
-                    } //end else
-
-                    //拍照功能
                 case R.id.iv:
                     button_press(v);
                     break;
