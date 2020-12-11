@@ -27,12 +27,16 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -216,19 +220,41 @@ public class RegisterActivity extends AppCompatActivity {
     public void updateUI(FirebaseUser account, String username, String email, String psw){
 
         if(account != null){
-            Toast.makeText(this,"U Signed In successfully",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"登入成功",Toast.LENGTH_LONG).show();
             startActivity(new Intent(context,UserInfoActivity.class));
 
         }else {
-            Toast.makeText(this,"U Didnt signed in",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"登入失敗",Toast.LENGTH_LONG).show();
         }
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
 
-        myRef.setValue("Hello, World!");
+        //TODO:將註冊的資料(暱稱、帳號、密碼上傳到 firebase_realtime database)
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("user");
+
+        HashMap<String, Object> data = new HashMap<String, Object>();
+        data.put("username", username);
+        data.put("email", email);
+        data.put("password", psw);
+
+        Task<Void> result = myRef.child("").push().setValue(data);
+        result.addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(context, "資料上傳成功", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        result.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(context, "資料上傳失敗", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //TODO:將註冊的資料照片上傳到 firebase storage
 
     }
 
-    //TODO:將註冊的資料(暱稱、帳號、密碼上傳到 firebase_realtime database)
+
 }
