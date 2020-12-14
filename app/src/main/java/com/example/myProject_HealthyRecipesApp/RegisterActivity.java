@@ -1,8 +1,8 @@
 package com.example.myProject_HealthyRecipesApp;
-//TODO:使用者按下使用者資訊頁中的 "註冊按鈕" 後會跳轉到此頁面，功能是進行註冊，完成註冊後會回到登入頁面。
-//TODO:註冊資訊:username, email, psw, sex, photo
-//TODO:填完註冊資訊後 -> 檢查欄位是否皆有填寫
-//TODO:將所有資料上傳到 firebase
+//TODO:[目標] 使用者按下使用者資訊頁中的 "註冊按鈕" 後會跳轉到此頁面，功能是進行註冊，完成註冊後會回到登入頁面。
+//TODO:[目標] 註冊資訊:username, email, psw, sex, photo
+//TODO:[目標]填完註冊資訊後 -> 檢查欄位是否皆有填寫
+//TODO:[目標] 將所有資料上傳到 firebase
 
 
 import androidx.annotation.NonNull;
@@ -47,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     private RadioGroup rg_gender;
     private boolean flagMale, flagFemale;
     private RadioButton rg_male, rg_female;
-    private String TAG = "main";
+    private String TAG = "register activity";
 
     private FirebaseAuth authControl;
     private Switch switch_psw_R;

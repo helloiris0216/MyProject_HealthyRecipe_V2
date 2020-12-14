@@ -1,7 +1,9 @@
 package com.example.myProject_HealthyRecipesApp;
-//TODO:按下導覽列中的 "user" 會跳轉至此頁面，功能是讓使用者登入 & 登出用。
-//TODO:使用者輸入 email & psw ，按下 "登入按鈕" 後先檢查使用者的欄位是否都有輸入
-//TODO:都有輸入後，將 photo 從 firebase 下載至 imageView上顯示，並跳出吐司 : 哈囉，username
+//TODO:[目標] 按下導覽列中的 "user" 會跳轉至此頁面，功能是讓使用者登入 & 登出用。
+//TODO:[目標] 使用者輸入 email & psw ，按下 "登入按鈕" 後先檢查使用者的欄位是否都有輸入
+//TODO:[目標] 接著檢查輸入的資料是否符合firebase上的資料
+//TODO:[目標] 都ok後，將 photo 從 firebase 下載至 imageView上顯示，並跳出吐司 : 哈囉，username
+//TODO:[目標] 使用者登入後才會有存取資料的功能(日記)
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,6 +12,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +28,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -36,11 +40,20 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 //TODO:使用者點選bottom navigation中的user，會跳至此頁面
 public class UserInfoActivity extends AppCompatActivity {
@@ -173,9 +186,12 @@ public class UserInfoActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(UserInfoActivity.this, "登入成功", Toast.LENGTH_SHORT).show();
+                                                setDBData();
 
-                                                //登入後取得使用者的資料
-                                                //FirebaseUser user = authControl.getCurrentUser();
+                                                //登入後切換到 homepage
+                                                Intent intent = new Intent(context, MainActivity.class);
+                                                startActivity(intent);
+
                                                 //TODO[未完成]:使用者登入後將照片從firebase上抓下來並顯示在imageView
 
                                             } else {
@@ -221,14 +237,11 @@ public class UserInfoActivity extends AppCompatActivity {
     } //end MyButton()
 
 
-//    //TODO[未解決]:建立存取使用者的資料(照片)並顯示在畫面上的自訂方法
+//    //TODO[未完成]:建立自訂方法，存取使用者的資料(照片)並顯示在畫面上
 //    private void DisplayUser() {
 //        //存取資料
-//        String name = user.getDisplayName();
+//        FirebaseUser user = authControl.getCurrentUser();
 //        String email = user.getEmail();
-//        String uid = user.getUid();
-//
-//
 //
 //    } //end DisplayUser()
 
@@ -267,8 +280,112 @@ public class UserInfoActivity extends AppCompatActivity {
     }   //end onRequestPermissionsResult()
 
 
+    //TODO[未完成]:setDBData() -> read data form firebase(food_database)
+    private void setDBData() {
+        Log.d(TAG, "setDBData: start");
 
-    //TODO:使用者按下同意拍照後，進行拍照，上傳，將照片顯示在iv上的動作
+        //取得 realtime database 目前的狀態
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("food_databse");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot ds : snapshot.getChildren()){
+                    HashMap<String, Object> map = new HashMap<String, Object>();
+
+                    String food_name = (String) ds.child("food_name").getValue();
+                    String food_serving_size = (String) ds.child("food_serving_size").getValue();
+                    String food_cal = (String) ds.child("food_cal").getValue();
+                    String food_pt = (String) ds.child("food_protein").getValue();
+                    String food_carbs = (String) ds.child("food_carbs").getValue();
+                    String food_fat = (String) ds.child("food_fat").getValue();
+
+                    Log.d(TAG, "food_name:"+food_name);
+                    Log.d(TAG, "food_serving_size:"+food_serving_size);
+                    Log.d(TAG, "food_cal:"+food_cal);
+                    Log.d(TAG, "food_pt:"+food_pt);
+                    Log.d(TAG, "food_carbs:"+food_carbs);
+                    Log.d(TAG, "food_fat:"+food_fat);
+
+                    String[] food_arr = {food_name, food_serving_size, food_cal, food_pt, food_carbs, food_fat};
+                    Intent intent = new Intent(context, Food_databaseActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putStringArray("food_arr", food_arr);
+                    intent.putExtras(bundle);
+                    for (String str : food_arr){
+                        Log.d(TAG, "food_arr:"+str);
+                    }
+
+                    startActivity(intent);
+
+
+
+//                    //使用map放
+//                    map.put("food_name", food_name);
+//                    map.put("food_serving_size", food_serving_size);
+//                    map.put("food_cal", food_cal);
+//                    map.put("food_pt", food_pt);
+//                    map.put("food_carbs", food_carbs);
+//                    map.put("food_fat", food_fat);
+//
+//                    List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+//                    list.add(map);
+//
+//                    Intent intent = new Intent(context, Food_databaseActivity.class);
+//                    Bundle bundle = new Bundle();
+//
+//                    ArrayList bundleList = new ArrayList();
+//                    bundleList.add(list);
+//                    bundle.putParcelableArrayList("list", bundleList);
+//                    intent.putExtras(bundle);
+
+
+
+
+
+
+
+//                    //自己檢查用
+//                    if (food_name.length()!=0) {
+//                        Log.d(TAG, "food_name:" + food_name);
+//                        map.put("food_name", food_name);
+//                    } else {
+//                        Log.d(TAG, "data doesn't exist");
+//                    }
+
+
+
+//                    Log.d(TAG, "food_arr:"+food_arr[0]);
+//                    int i;
+//                    for(i=0; i<food_arr.length; i++) {
+//                        switch (food_arr[i]) {
+//                            case :
+//                                break;
+//
+//                        }
+//                    }
+
+
+
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }   //end setDBData()
+
+
+
+
+    //TODO:使用者按下同意拍照後，進行拍照，[未完成]上傳，將照片顯示在iv上的動作
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void button_press(View v) {
         Toast.makeText(context, "拍照", Toast.LENGTH_SHORT).show();
@@ -368,7 +485,6 @@ public class UserInfoActivity extends AppCompatActivity {
 
     }   //end button_press()
 
-    //TODO[未完成]:抓下使用者的大頭照
 
 
 }

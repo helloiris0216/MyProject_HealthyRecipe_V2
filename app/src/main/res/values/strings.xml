@@ -8,4 +8,10 @@
         <item>點心</item>
     </string-array>
 
+    <string-array name="arr_food">
+        <item>雞胸肉</item>
+        <item>蘋果</item>
+        <item>豬里肌</item>
+    </string-array>
+
 </resources>
