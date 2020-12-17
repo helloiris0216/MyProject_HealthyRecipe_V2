@@ -30,20 +30,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
+
+import static com.example.myProject_HealthyRecipesApp.FoodDataHolder.list;
+
 
 public class DiaryActivity extends AppCompatActivity {
 
     private String[] arr_mealName;
     private Context context;
     private ListView listView_diary;
-    private TextView tv_meal;
+    private TextView tv_meal_d, tv_addFood_d, tv_cal_d, tv_food_d;
     private HashMap<String, Object> meal_data;
     private String TAG = "diary activity";
     private List<Map<String, Object>> list_meal;
-    private TextView tv_addFood;
-    private TextView tv_cal;
-    private TextView tv_food;
+
 
 
     //TODO:初始化
@@ -54,6 +54,7 @@ public class DiaryActivity extends AppCompatActivity {
 
         setTitle("My Diary");
         context = this;
+        list = FoodDataHolder.init(getResources());
 
         //TODO:action bar 1
         ActionBar bar = getSupportActionBar();
@@ -65,7 +66,6 @@ public class DiaryActivity extends AppCompatActivity {
         setListener();
         getData();
 
-
     } //end onCreate()
 
 
@@ -73,22 +73,15 @@ public class DiaryActivity extends AppCompatActivity {
     private void getData() {
 
         LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.listview_layout, (ViewGroup) findViewById(R.id.list_item_id));
-        tv_meal = view.findViewById(R.id.tv_meal);
-        tv_addFood = view.findViewById(R.id.tv_addFood);
-        tv_cal = view.findViewById(R.id.tv_cal);
-        tv_food = view.findViewById(R.id.tv_food);
+        View view = inflater.inflate(R.layout.diary_listview_item_layout, (ViewGroup) findViewById(R.id.list_item_id));
+        tv_meal_d = view.findViewById(R.id.tv_meal_d);
+        tv_addFood_d = view.findViewById(R.id.tv_addFood_d);
+        tv_cal_d = view.findViewById(R.id.tv_cal_d);
+        tv_food_d = view.findViewById(R.id.tv_food_d);
 
-        tv_food.setText("");
-        tv_food.setText("123");
-
-        Intent intent = getIntent();
-        String weight = intent.getStringExtra("WEIGHT");
-        Log.d(TAG, "weight:"+weight);
-
-        //將資料顯示在textView上
-        tv_food.setText("");
-        tv_food.append(weight);
+//        FoodDataActivity f = new FoodDataActivity();
+//        f.getWeight();
+//        Log.d(TAG, "weight:"+f.getWeight());
 
     }   //end getData()
 
@@ -112,7 +105,7 @@ public class DiaryActivity extends AppCompatActivity {
                 Toast.makeText(context, "我的"+arr_mealName[index], Toast.LENGTH_SHORT).show();
 
                 //使用者點選listView後跳轉到 food database 頁面
-                Intent intent = new Intent(context, Food_databaseActivity.class);
+                Intent intent = new Intent(context, FoodDataActivity.class);
                 startActivity(intent);
 
             }
@@ -159,8 +152,8 @@ public class DiaryActivity extends AppCompatActivity {
     private void setAdapter() {
         Log.d(TAG, "setAdaptor: ok");
 
-        SimpleAdapter adapter = new SimpleAdapter(context, list_meal, R.layout.listview_layout,
-                new String[]{"MEALNAME"}, new int[]{R.id.tv_meal});
+        SimpleAdapter adapter = new SimpleAdapter(context, list_meal, R.layout.diary_listview_item_layout,
+                new String[]{"MEALNAME"}, new int[]{R.id.tv_meal_d});
 
         listView_diary.setAdapter(adapter);
     } //end setAdapter()

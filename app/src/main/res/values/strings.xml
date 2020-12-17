@@ -10,8 +10,26 @@
 
     <string-array name="arr_food">
         <item>雞胸肉</item>
-        <item>蘋果</item>
+        <item>雞蛋</item>
+        <item>地瓜</item>
+        <item>馬鈴薯</item>
+        <item>小番茄</item>
+        <item>和牛</item>
+        <item>雞腿</item>
+        <item>香蕉</item>
+        <item>空心菜</item>
+        <item>青江菜</item>
+        <item>白飯</item>
+        <item>白麵</item>
+        <item>珍珠芭樂</item>
+        <item>綠豆糕</item>
+        <item>梅花豬</item>
         <item>豬里肌</item>
+        <item>鱸魚</item>
+        <item>鮭魚</item>
+        <item>鱈魚</item>
+        <item>高麗菜</item>
+        <item>蘋果</item>
     </string-array>
 
 </resources>

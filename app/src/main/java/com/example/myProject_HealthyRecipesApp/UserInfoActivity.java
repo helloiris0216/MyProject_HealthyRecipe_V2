@@ -28,7 +28,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -50,10 +49,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 //TODO:使用者點選bottom navigation中的user，會跳至此頁面
 public class UserInfoActivity extends AppCompatActivity {
@@ -311,7 +307,7 @@ public class UserInfoActivity extends AppCompatActivity {
                     Log.d(TAG, "food_fat:"+food_fat);
 
                     String[] food_arr = {food_name, food_serving_size, food_cal, food_pt, food_carbs, food_fat};
-                    Intent intent = new Intent(context, Food_databaseActivity.class);
+                    Intent intent = new Intent(context, FoodDataActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putStringArray("food_arr", food_arr);
                     intent.putExtras(bundle);
@@ -334,7 +330,7 @@ public class UserInfoActivity extends AppCompatActivity {
 //                    List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 //                    list.add(map);
 //
-//                    Intent intent = new Intent(context, Food_databaseActivity.class);
+//                    Intent intent = new Intent(context, FoodDataActivity.class);
 //                    Bundle bundle = new Bundle();
 //
 //                    ArrayList bundleList = new ArrayList();
