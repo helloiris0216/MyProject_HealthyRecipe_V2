@@ -86,7 +86,7 @@ public class DiaryActivity extends AppCompatActivity {
         Calculate weight_num = new Calculate();
         Double w = weight_num.getWeight();
 
-        Log.d(TAG, "weight_num:"+w);
+        Log.d(TAG, "weight_num(D):"+w);
         //tv_food_d.setText(w.toString());
 
 
