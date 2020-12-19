@@ -49,6 +49,8 @@ public class FoodDataActivity extends AppCompatActivity {
 
 
     private static Double weight;
+    private ArrayList<String> name_list;
+    private ArrayList<Double> size_list, pt_list, cal_list, carbs_list, fat_list;
 
     public Double getWeight(){
 
@@ -91,12 +93,12 @@ public class FoodDataActivity extends AppCompatActivity {
         List<Map<String, Object>> list_use= new ArrayList<Map<String, Object>>();    //建立符合simpleAdapter所需要的list
 
         //TODO:1.先將接收過來的list內的資料取出來存成個別的list
-        ArrayList<String> name_list = new ArrayList<String>();
-        ArrayList<Double> size_list = new ArrayList<Double>();
-        ArrayList<Double> cal_list = new ArrayList<Double>();
-        ArrayList<Double> pt_list = new ArrayList<Double>();
-        ArrayList<Double> carbs_list = new ArrayList<Double>();
-        ArrayList<Double> fat_list = new ArrayList<Double>();
+        name_list = new ArrayList<String>();
+        size_list = new ArrayList<Double>();
+        cal_list = new ArrayList<Double>();
+        pt_list = new ArrayList<Double>();
+        carbs_list = new ArrayList<Double>();
+        fat_list = new ArrayList<Double>();
         for (int i=0; i<list.size(); i++){
             name_list.add(list.get(i).getName());
             size_list.add(list.get(i).getServing_size());
@@ -144,6 +146,9 @@ public class FoodDataActivity extends AppCompatActivity {
                 }
 
                 dialog(arr_food[index]);
+
+
+                //將使用者點選的資料傳到Calculate class做計算
             }
         });
     }
@@ -153,7 +158,7 @@ public class FoodDataActivity extends AppCompatActivity {
     private Double dialog(String arr_food) {
 
         LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_layout, (ViewGroup) findViewById(R.id.dialog_id));
+        final View view = inflater.inflate(R.layout.dialog_layout, (ViewGroup) findViewById(R.id.dialog_id));
 
         tv_dialog_addFood = view.findViewById(R.id.tv_dialog_addFood);
         et_dialog_weight = view.findViewById(R.id.et_dialog_weight);
@@ -170,8 +175,8 @@ public class FoodDataActivity extends AppCompatActivity {
                         //[目的]使用者輸入 weight 後，在 Calculate class做運算
                         weight = Double.parseDouble(et_dialog_weight.getText().toString());
                         Log.d(TAG, "weight:"+weight);
+
                         Intent intent = new Intent(context, DiaryActivity.class);
-//                        intent.putExtra("WEIGHT", weight);
                         startActivity(intent);
 
                     }

@@ -73,23 +73,19 @@ public class DiaryActivity extends AppCompatActivity {
 
     //TODO:getData()
     private void getData() {
-
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.diary_listview_item_layout, (ViewGroup) findViewById(R.id.list_item_id));
         tv_meal_d = view.findViewById(R.id.tv_meal_d);
         tv_addFood_d = view.findViewById(R.id.tv_addFood_d);
         tv_cal_d = view.findViewById(R.id.tv_cal_d);
         tv_food_d = view.findViewById(R.id.tv_food_d);
-
-
         //TODO:[測試:ok]從calculate得到的weight(已轉成 double型態
         Calculate weight_num = new Calculate();
         Double w = weight_num.getWeight();
 
         Log.d(TAG, "weight_num:"+w);
-        //tv_food_d.setText(w.toString());
-
-
+        Log.d(TAG, "weight_num(D):"+w);
+        tv_food_d.setText(w.toString());
 
     }   //end getData()
 
