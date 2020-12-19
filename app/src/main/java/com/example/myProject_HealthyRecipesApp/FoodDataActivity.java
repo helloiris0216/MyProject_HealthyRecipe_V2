@@ -35,7 +35,7 @@ import static com.example.myProject_HealthyRecipesApp.FoodDataHolder.list;
 
 public class FoodDataActivity extends AppCompatActivity {
 
-    private String TAG = "food";
+    private String TAG = "foodData_activity";
     private ListView lv_fooddata;
     private Context context;
     private ArrayList<Map<String, Object>> dataList;
@@ -46,9 +46,11 @@ public class FoodDataActivity extends AppCompatActivity {
     private TextView tv_dialog_addFood;
     private EditText et_dialog_weight;
     private TextView tv_name_f, tv_size_f, tv_cal_f, tv_pt_f, tv_carbs_f, tv_fat_f;
-    private static String weight;
 
-    public String getWeight(){
+
+    private static Double weight;
+
+    public Double getWeight(){
 
         return weight;
     }
@@ -148,7 +150,7 @@ public class FoodDataActivity extends AppCompatActivity {
 
 
     //TODO:dialog()
-    private String dialog(String arr_food) {
+    private Double dialog(String arr_food) {
 
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_layout, (ViewGroup) findViewById(R.id.dialog_id));
@@ -165,7 +167,8 @@ public class FoodDataActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        weight = et_dialog_weight.getText().toString();
+                        //[目的]使用者輸入 weight 後，在 Calculate class做運算
+                        weight = Double.parseDouble(et_dialog_weight.getText().toString());
                         Log.d(TAG, "weight:"+weight);
                         Intent intent = new Intent(context, DiaryActivity.class);
 //                        intent.putExtra("WEIGHT", weight);
@@ -176,7 +179,7 @@ public class FoodDataActivity extends AppCompatActivity {
 
         builder.setNegativeButton("取消", null);
         builder.create().show();
-        return weight;
+        return weight;  //TODO:將weight傳給 Calculate class運算
     }   //end dialog()
 
 

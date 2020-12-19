@@ -41,8 +41,9 @@ public class DiaryActivity extends AppCompatActivity {
     private ListView listView_diary;
     private TextView tv_meal_d, tv_addFood_d, tv_cal_d, tv_food_d;
     private HashMap<String, Object> meal_data;
-    private String TAG = "diary activity";
+    private String TAG = "diary_activity";
     private List<Map<String, Object>> list_meal;
+    private List<Calculate> list_calculate;
 
 
 
@@ -55,6 +56,7 @@ public class DiaryActivity extends AppCompatActivity {
         setTitle("My Diary");
         context = this;
         list = FoodDataHolder.init(getResources());
+        list_calculate = Calculate.init();
 
         //TODO:action bar 1
         ActionBar bar = getSupportActionBar();
@@ -79,11 +81,18 @@ public class DiaryActivity extends AppCompatActivity {
         tv_cal_d = view.findViewById(R.id.tv_cal_d);
         tv_food_d = view.findViewById(R.id.tv_food_d);
 
-//        FoodDataActivity f = new FoodDataActivity();
-//        f.getWeight();
-//        Log.d(TAG, "weight:"+f.getWeight());
+
+        //TODO:[測試:ok]從calculate得到的weight(已轉成 double型態
+        Calculate weight_num = new Calculate();
+        Double w = weight_num.getWeight();
+
+        Log.d(TAG, "weight_num:"+w);
+        //tv_food_d.setText(w.toString());
+
+
 
     }   //end getData()
+
 
 
     //TODO:setListener()
@@ -104,10 +113,10 @@ public class DiaryActivity extends AppCompatActivity {
                 Log.d(TAG, "arr_mealName[index]:"+arr_mealName[index]);
                 Toast.makeText(context, "我的"+arr_mealName[index], Toast.LENGTH_SHORT).show();
 
+
                 //使用者點選listView後跳轉到 food database 頁面
                 Intent intent = new Intent(context, FoodDataActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -163,4 +172,5 @@ public class DiaryActivity extends AppCompatActivity {
     private void findViews() {
         listView_diary = findViewById(R.id.listView_diary);
     }
+
 }

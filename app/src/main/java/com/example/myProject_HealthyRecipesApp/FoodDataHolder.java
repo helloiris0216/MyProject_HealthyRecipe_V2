@@ -20,7 +20,7 @@ import java.util.List;
 
 public class FoodDataHolder {
     public static List<FoodDataHolder> list;
-    private static String TAG="FoodDataHolder";
+    private static String TAG="FoodData_Holder";
 
     private String food_name;
     private Double food_cal;
