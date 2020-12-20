@@ -1,7 +1,7 @@
 package com.example.myProject_HealthyRecipesApp;
-//TODO:[目標] 按下導覽列中的 "user" 會跳轉至此頁面，功能是讓使用者登入 & 登出用。
-//TODO:[目標] 使用者輸入 email & psw ，按下 "登入按鈕" 後先檢查使用者的欄位是否都有輸入
-//TODO:[目標] 接著檢查輸入的資料是否符合firebase上的資料
+//TODO:[目標:完成] 按下導覽列中的 "user" 會跳轉至此頁面，功能是讓使用者登入 & 登出用。
+//TODO:[目標:完成] 使用者輸入 email & psw ，按下 "登入按鈕" 後先檢查使用者的欄位是否都有輸入
+//TODO:[目標:完成] 接著檢查輸入的資料是否符合firebase上的資料
 //TODO:[目標] 都ok後，將 photo 從 firebase 下載至 imageView上顯示，並跳出吐司 : 哈囉，username
 //TODO:[目標] 使用者登入後才會有存取資料的功能(日記)
 

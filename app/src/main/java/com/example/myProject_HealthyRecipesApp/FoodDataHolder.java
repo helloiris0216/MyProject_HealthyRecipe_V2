@@ -1,4 +1,5 @@
 package com.example.myProject_HealthyRecipesApp;
+//TODO:[目標:完成] 接收JSON資料，並將解析好的資料傳出
 
 import android.content.res.Resources;
 import android.util.Log;

@@ -1,5 +1,5 @@
 package com.example.myProject_HealthyRecipesApp;
-//TODO:[目標]取得FoodDataActivity傳出的 weight，並在此類別進行運算，最後將運算結果傳到DiaryActivity中的tv顯示
+//TODO:[目標:完成]取得FoodDataActivity傳出的 weight，並在此類別進行運算，最後將運算結果傳到DiaryActivity中的tv顯示
 
 
 import android.util.Log;
@@ -85,14 +85,14 @@ public class Calculate {
             Log.d(TAG, "pt:"+fat);
 
         }
-        //5.賦值給 myCal
+        //4.賦值給 myCal
         myCal.setData(name, size, cal, pt, carbs, fat);
 
-        //4.將已賦值的 myCal 加入 list_Cal
+        //5.將已賦值的 myCal 加入 list_Cal
         list_Cal.add(myCal);
 
 
-        //5.印出來看看
+        //6.印出來看看
         Log.d(TAG, "list_cal size:"+list_Cal.size());
        // Log.d(TAG, "weight_num(C):" + list_Cal.get(0).getWeight());
         //新增部分[結束]<<<<<<<<<<<<<<<<
@@ -100,7 +100,7 @@ public class Calculate {
         return list_Cal;
     }
 
-    //6.設定取得屬性的方法
+    //7.設定取得屬性的方法
     public String getName_cal(){return name;}
     public Double getSize_cal(){return size;}
     public Double getCal_cal(){return cal;}
