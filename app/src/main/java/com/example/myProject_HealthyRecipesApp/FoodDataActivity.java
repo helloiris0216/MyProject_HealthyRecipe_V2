@@ -38,11 +38,8 @@ public class FoodDataActivity extends AppCompatActivity {
     private String TAG = "foodData_activity";
     private ListView lv_fooddata;
     private Context context;
-    private ArrayList<Map<String, Object>> dataList;
-    private SimpleAdapter adapter;
     private TextView tv_foodData;
     private String[] arr_food;
-    private List<Map<String, Object>> list_food;
     private TextView tv_dialog_addFood;
     private EditText et_dialog_weight;
     private TextView tv_name_f, tv_size_f, tv_cal_f, tv_pt_f, tv_carbs_f, tv_fat_f;
@@ -51,9 +48,14 @@ public class FoodDataActivity extends AppCompatActivity {
     private static Double weight;
     private ArrayList<String> name_list;
     private ArrayList<Double> size_list, pt_list, cal_list, carbs_list, fat_list;
+    private static HashMap<String, Object> map;
+
+
+    public HashMap<String, Object> getMap(){
+        return map;
+    }
 
     public Double getWeight(){
-
         return weight;
     }
 
@@ -75,10 +77,6 @@ public class FoodDataActivity extends AppCompatActivity {
         //getDBData();
 
     } //end onCreate()
-
-
-    //TODO:[未完成] getDBData()
-
 
 
     //TODO:findAndPutData():抓出JSON上食物的資料(資料由FoodDataHolder傳過來)
@@ -147,11 +145,22 @@ public class FoodDataActivity extends AppCompatActivity {
 
                 dialog(arr_food[index]);
 
+                //將使用者點選的資料傳到Calculate class做計算:用map傳
+                int i = index;
+                map = new HashMap<String, Object>();
+                map.put("NAME", name_list.get(i));
+                map.put("SIZE", size_list.get(i));
+                map.put("CAL", cal_list.get(i));
+                map.put("PROTEIN", pt_list.get(i));
+                map.put("CARBS", carbs_list.get(i));
+                map.put("FAT", fat_list.get(i));
 
-                //將使用者點選的資料傳到Calculate class做計算
+                Log.d(TAG, "name_list[i]:"+name_list.get(i));
+                Log.d(TAG, "map_sent:"+map);
+
             }
         });
-    }
+    }   //end setListener()
 
 
     //TODO:dialog()
@@ -174,7 +183,7 @@ public class FoodDataActivity extends AppCompatActivity {
 
                         //[目的]使用者輸入 weight 後，在 Calculate class做運算
                         weight = Double.parseDouble(et_dialog_weight.getText().toString());
-                        Log.d(TAG, "weight:"+weight);
+                        Log.d(TAG, "weight(FDA):"+weight);
 
                         Intent intent = new Intent(context, DiaryActivity.class);
                         startActivity(intent);
@@ -185,6 +194,7 @@ public class FoodDataActivity extends AppCompatActivity {
         builder.setNegativeButton("取消", null);
         builder.create().show();
         return weight;  //TODO:將weight傳給 Calculate class運算
+
     }   //end dialog()
 
 
@@ -198,7 +208,7 @@ public class FoodDataActivity extends AppCompatActivity {
         tv_carbs_f = findViewById(R.id.tv_carbs_f);
         tv_fat_f = findViewById(R.id.tv_fat_f);
 
-    }
+    }   //end findViews()
 
 
     //TODO:action bar 2
@@ -210,9 +220,7 @@ public class FoodDataActivity extends AppCompatActivity {
                 finish();
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-
-}
+}   //end
