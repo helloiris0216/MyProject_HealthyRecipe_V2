@@ -50,7 +50,7 @@ public class DiaryActivity extends AppCompatActivity {
     private Calculate data_fromCal;
     private String data;
 
-    //紀錄被點選的位置
+    //[★★★] 紀錄被點選的位置
     static int clickedItem = -1;
 
     String name;
@@ -95,7 +95,6 @@ public class DiaryActivity extends AppCompatActivity {
     //TODO:[2]在 listView 上顯示由 CalCulate class 傳過來的運算結果
     private void findAndPutData() {
         listView_diary = findViewById(R.id.listView_diary);
-
 
         //[2]-1.條件檢查
         if(clickedItem == -1){
@@ -145,27 +144,7 @@ public class DiaryActivity extends AppCompatActivity {
                             carbs + " g\n" +
                             fat + " g\n";
 
-            //                    tv_food_d.setText(name+"\n");
-//                    tv_food_d.append(size+" g\n");
-//                    tv_food_d.append(cal+" cal\n");
-//                    tv_food_d.append(pt+" g\n" + "");
-//                    tv_food_d.append(carbs+" g\n");
-//                    tv_food_d.append(fat+" g\n");
-
-            //[2]-3.將資料放入map中
-            //List<Map<String, Object>> list_data = new ArrayList<Map<String, Object>>();
-//            final String[] arr_data = {data_fromCal.getName_cal(), data_fromCal.getSize_cal().toString(),
-//                    data_fromCal.getCal_cal().toString(), data_fromCal.getPt_cal().toString(),
-//                    data_fromCal.getCarbs_cal().toString(), data_fromCal.getFat_cal().toString()};
-//            for (int i = 0; i < arr_data.length; i++) {
-//                HashMap<String, Object> map = new HashMap<String, Object>();
-//                meal_data = new HashMap<String, Object>();
-//                meal_data.put("DATA", arr_data[i]);
-//
-//                list_meal.add(meal_data);
-//            }
             //[★★★] listView 初始化
-
             list_meal = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < arr_mealName.length; i++) {
                 meal_data = new HashMap<String, Object>();
@@ -180,16 +159,6 @@ public class DiaryActivity extends AppCompatActivity {
                     new int[]{R.id.tv_meal_d, R.id.tv_food_d});
             //連結adapter
             listView_diary.setAdapter(adapterNew);
-
-//            Log.d(TAG, "list_meal:" + list_meal);
-
-            //[2]-4.將資料存到 adapter
-
-//            final SimpleAdapter adapter = new SimpleAdapter(context, list_meal, R.layout.diary_listview_item_layout,
-//                    new String[]{"MEALNAME"},
-//                    new int[]{R.id.tv_meal_d});
-//
-//            listView_diary.setAdapter(adapter);
         }
 
         //[1]-3 & [2]-5.監聽是listView上哪列item被點選
@@ -199,44 +168,9 @@ public class DiaryActivity extends AppCompatActivity {
                 //[★★★] 紀錄被點選的項目編號
                 clickedItem = position;
 
-                //[1]-4.顯示內容
-//                Toast.makeText(context, "我的" + arr_mealName[position], Toast.LENGTH_SHORT).show();
-
-                tv_food_d = adapterView.findViewById(R.id.tv_food_d);   //[測試] 在tv上顯示內容
-                Log.d(TAG, "item counts:"+listView_diary.getChildCount());
-                //[2]-6.(為解決)將使用者點選的內容顯示在 tv 上
-
-                //TODO:[Q]解決在指定的item列上顯示資料內容
-                listView_diary.setSelection(position);
-
-//                    adapter = new ArrayAdapter<>()
-//                listView_diary.setAdapter(adapter);
-                //Log.d(TAG, "item pos:"+listView_diary.getChildAt(position).toString());
-
-                // view.findViewById(R.id.tv_food_d);
-//                tv_food_d.setText("1111");
-//                    tv_food_d.setText(name+"\n");
-//                    tv_food_d.append(size+" g\n");
-//                    tv_food_d.append(cal+" cal\n");
-//                    tv_food_d.append(pt+" g\n" + "");
-//                    tv_food_d.append(carbs+" g\n");
-//                    tv_food_d.append(fat+" g\n");
-
+                //跳頁
                 Intent intent = new Intent(context, FoodDataActivity.class);
                 startActivity(intent);
-
-
-//                //判斷是否要跳轉到 food database 頁面
-//                if (tv_food_d.length()==0) {
-//                    //[1]-5.跳轉
-////                    tv_food_d.setText("");
-//                    Intent intent = new Intent(context, FoodDataActivity.class);
-//                    startActivity(intent);
-//                } else {
-//
-//                    //end (未解決)
-//
-//                }
             }
         }); //end listener
     }   //end findAndPutData()
