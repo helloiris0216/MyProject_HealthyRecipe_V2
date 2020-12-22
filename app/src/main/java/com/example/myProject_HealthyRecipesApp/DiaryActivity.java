@@ -53,6 +53,8 @@ public class DiaryActivity extends AppCompatActivity {
 
     //[★★★] 紀錄被點選的位置
     static int clickedItem = -1;
+    //紀錄是否有新增項目
+    static Boolean hasClickedItem = false;
 
     String name;
     String size;
@@ -117,7 +119,6 @@ public class DiaryActivity extends AppCompatActivity {
 
     } //end onCreate()
 
-
     //TODO:action bar 2
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -138,6 +139,8 @@ public class DiaryActivity extends AppCompatActivity {
 
         //[1]-1 & [2]-1.條件檢查
         if (clickedItem == -1) {
+            //使用者從未選取項目則做
+
             //[1]-2拿到meal name(早午晚點心) & 將meal name放到list中
             //[★★★] listView 初始化
             arr_mealName = getResources().getStringArray(R.array.arr_meal);
@@ -160,7 +163,49 @@ public class DiaryActivity extends AppCompatActivity {
             //[1]-4.連結adapter
             listView_diary.setAdapter(adapter);
 
-        } else if (clickedItem != -1) {
+        } else if (!hasClickedItem) {
+            /**
+             * 此區塊為新增程式碼
+             */
+            //使用者離開頁面時無選取項目則做
+
+            name = data_fromCal.getName_cal();
+            size = data_fromCal.getSize_cal().toString();
+            cal = data_fromCal.getCal_cal().toString();
+            pt = data_fromCal.getPt_cal().toString();
+            carbs = data_fromCal.getCarbs_cal().toString();
+            fat = data_fromCal.getFat_cal().toString();
+
+            //[2]-3.陣列初始化
+            DecimalFormat df = new DecimalFormat("0.0");    //將顯示內容取小數點後兩位
+            arr_foodData[clickedItem] =
+                    arr_foodData[clickedItem];
+
+            //[2]-4 & [3]-1.取得食物的 cal
+            Log.d(TAG, "確認資料>>>");
+            cal_c = Double.parseDouble(data_fromCal.getCal_cal().toString());
+            Log.d(TAG, "cal_c:" + cal_c);
+
+            //印出一天熱量
+            Log.d(TAG, "total:" + total);
+
+            //[3]-3.將加總後的 total 直接顯示在 tv_foodData
+            tv_foodData.setText(df.format(total));
+
+            //[★★★] listView 初始化
+            //[1]-5 & [2]-6.將陣列元素放進 list 內
+            list_meal = new ArrayList<Map<String, Object>>();
+            for (int i = 0; i < arr_mealName.length; i++) {
+                meal_data = new HashMap<String, Object>();
+                meal_data.put("MEALNAME", arr_mealName[i]);
+                meal_data.put("FOOD", arr_foodData[i]);
+                meal_data.put("CAL", arr_foodCal[i]);
+                list_meal.add(meal_data);
+            }
+
+        } else if (hasClickedItem) {
+            //使用者離開頁面時有選取項目則做
+
             //[2]-2.拿資料，先將資料印出來檢查
             Log.d(TAG, "確認資料>>>");
             Log.d(TAG, "getName(D):" + data_fromCal.getName_cal());
@@ -240,6 +285,7 @@ public class DiaryActivity extends AppCompatActivity {
             }
 
         }//end != -1
+
         //[1]-6 & 2-[7].將要顯示的清單存入到 adapter
         final SimpleAdapter adapterNew = new SimpleAdapter(context, list_meal, R.layout.diary_listview_item_layout,
                 new String[]{"MEALNAME", "FOOD", "CAL"},
@@ -260,6 +306,9 @@ public class DiaryActivity extends AppCompatActivity {
                 positionNew = position;
                 parent = adapterView;
                 viewNew = view;
+
+                //設為"有選取項目"狀態
+                hasClickedItem = true;
 
                 //跳頁
                 Intent intent = new Intent(context, FoodDataActivity.class);
@@ -361,7 +410,8 @@ public class DiaryActivity extends AppCompatActivity {
                         Toast.makeText(context, "回首頁", Toast.LENGTH_SHORT).show();
                         Intent intent_home = new Intent(context, HomePageActivity.class);
                         startActivity(intent_home);
-
+                        //設為"無選取項目"狀態
+                        hasClickedItem = false;
                         break;
 
                     //回個人資訊頁
@@ -369,7 +419,8 @@ public class DiaryActivity extends AppCompatActivity {
                         Toast.makeText(context, "回使用者資訊頁", Toast.LENGTH_SHORT).show();
                         Intent intent_user = new Intent(context, UserInfoActivity.class);
                         startActivity(intent_user);
-
+                        //設為"無選取項目"狀態
+                        hasClickedItem = false;
                         break;
 
                     //到我的日記頁
@@ -378,7 +429,8 @@ public class DiaryActivity extends AppCompatActivity {
                         Intent intent_diary = new Intent(context, DiaryActivity.class);
                         intent_diary.putExtra("BACK_FROM_DIARY", 123);
                         startActivity(intent_diary);
-
+                        //設為"無選取項目"狀態
+                        hasClickedItem = false;
                         break;
 
                 } //end switch
