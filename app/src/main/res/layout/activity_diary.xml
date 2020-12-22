@@ -40,7 +40,8 @@
                 android:ems="2"
                 android:hint="Goal"
                 android:inputType="number"
-                android:textSize="20sp"
+                android:textColor="#FF5722"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -50,8 +51,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="-"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/tv_foodData"
@@ -60,7 +60,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:hint="Food"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <Button
@@ -69,9 +69,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="確定"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:text="計算"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tv_remaining"
@@ -80,8 +79,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:hint="Remaining"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textSize="20sp" />
         </LinearLayout>
 
     </LinearLayout>

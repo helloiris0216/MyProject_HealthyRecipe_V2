@@ -6,18 +6,14 @@ package com.example.myProject_HealthyRecipesApp;
 //TODO:[目標] 使用者登入後才會有存取資料的功能(日記)
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -28,6 +24,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -40,17 +37,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
+import java.io.File;
+import java.io.IOException;
 
 //TODO:使用者點選bottom navigation中的user，會跳至此頁面
 public class UserInfoActivity extends AppCompatActivity {
@@ -58,19 +53,18 @@ public class UserInfoActivity extends AppCompatActivity {
     private ImageView iv;
     private EditText etEmail, etPsw;
     private Switch switchPsw;
-    private Button btnLogin, btnRegister, btnLogout, btnUpload;
+    private Button btnLogin, btnRegister, btnLogout, btnDownload;
     private String TAG = "main";
     private FirebaseAuth authControl;
 
     private FirebaseUser currentUser;
 
-    private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    private static final int CAMERA_REQUEST = 1888;
+
     private Bitmap theImage;
     private StorageReference mStorageRef;
     private Context context;
     private BottomNavigationView bottomNavigation;
-
+    private ProgressBar progress;
 
 
     //TODO:設定初始值
@@ -88,6 +82,7 @@ public class UserInfoActivity extends AppCompatActivity {
         bar.setDisplayHomeAsUpEnabled(true);
 
         findViews();
+        progress.setVisibility(View.INVISIBLE);
         setListener();
 
 
@@ -132,8 +127,7 @@ public class UserInfoActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new MyButton());
         btnLogout.setOnClickListener(new MyButton());
         btnRegister.setOnClickListener(new MyButton());
-
-        iv.setOnClickListener(new MyButton());
+        btnDownload.setOnClickListener(new MyButton());
 
         //TODO:監聽bottomNaigation(最下方的action bar)，並設定使用者按下後會跳轉到指定頁面
         bottomNavigation.setItemIconTintList(null);
@@ -186,9 +180,11 @@ public class UserInfoActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnRegister = (Button) findViewById(R.id.btn_register);
         btnLogout = (Button) findViewById(R.id.btn_logout);
-        btnUpload = (Button)findViewById(R.id.btn_upload);
+        btnDownload = (Button)findViewById(R.id.btn_download);
 
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_i);
+
+        progress = (ProgressBar) findViewById(R.id.progressBar);
 
     }
 
@@ -267,58 +263,55 @@ public class UserInfoActivity extends AppCompatActivity {
                     finish();
                     break;
 
-                case R.id.iv:
-                    button_press(v);
-                    break;
+                case R.id.btn_download:
+                    progress.setVisibility(View.VISIBLE);
+                    Log.i("下載", "1 開始....");
+                    StorageReference leaf = mStorageRef.child("user_pic.jpg");
 
-                case R.id.btn_upload:
-                    //將使用者的照片上傳到雲端
-                    if (v.getId() == R.id.btn_upload) {
-                        Toast.makeText(context, "upload....", Toast.LENGTH_SHORT).show();
+                    File file = null;
+                    try {
+                        file = File.createTempFile("user_pic", "jpg");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    final FileDownloadTask task = leaf.getFile(file);
+                    task.addOnProgressListener(
+                            new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                    //Log.i("下載", "已下載:" + taskSnapshot.getBytesTransferred());
+                                    final int percent = (int) ((double) taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount() * 100);
+                                    Log.i("下載", "已下載:" + percent + " %");
+                                    UserInfoActivity.this.runOnUiThread(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    progress.setProgress(percent);
+                                                }
+                                            }
+                                    );
 
-
-                        //將ImageView 中的圖片化為  byte 陣列
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-                        //將照片壓縮到 byteArray
-                        theImage.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                        //final long total = blob.length;
-                        byte[] blob = stream.toByteArray(); //將壓縮檔轉成byte[]
-
-                        //將照片存在子節點
-                        StorageReference leaf = mStorageRef.child("user_pic.jpg");
-                        UploadTask task = leaf.putBytes(blob);
-                        task.addOnSuccessListener(
-                                new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                        Toast.makeText(context, "upload....成功", Toast.LENGTH_LONG).show();
-                                    }
                                 }
-                        );
-                        task.addOnFailureListener(
-                                new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(context, "upload....失敗", Toast.LENGTH_LONG).show();
-                                    }
+                            }
+                    );
+                    final File finalFile = file;
+                    task.addOnSuccessListener(
+                            new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                    Bitmap bitmap = BitmapFactory.decodeFile(String.valueOf(finalFile));
+                                    iv.setImageBitmap(bitmap);
+                                    progress.setVisibility(View.INVISIBLE);
                                 }
-                        );
-                    } //end if(isTook)
+                            }
+                    );
+
                     break;
 
             } //end switch
         } //end onClick()
     } //end MyButton()
 
-
-//    //TODO[未完成]:建立自訂方法，存取使用者的資料(照片)並顯示在畫面上
-//    private void DisplayUser() {
-//        //存取資料
-//        FirebaseUser user = authControl.getCurrentUser();
-//        String email = user.getEmail();
-//
-//    } //end DisplayUser()
 
     @Override
     protected void onDestroy() {
@@ -327,178 +320,6 @@ public class UserInfoActivity extends AppCompatActivity {
         //關閉程式時讓使用者登出
         authControl.signOut();
     }
-
-
-    //TODO:取得使用者的拍照權限
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            theImage = (Bitmap) data.getExtras().get("data");
-            iv.setImageBitmap(theImage);
-        }
-    }//end onActivityResult()
-
-    
-
-    //當使用者按下同意就跑這個函數
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            } else {
-                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
-            }
-        }
-    }   //end onRequestPermissionsResult()
-
-
-//    //TODO[未完成]:setDBData() -> read data form firebase(food_database)
-//    private void setDBData() {
-//        Log.d(TAG, "setDBData: start");
-//
-//        //取得 realtime database 目前的狀態
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        final DatabaseReference myRef = database.getReference("food_databse");
-//
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @SuppressLint("RestrictedApi")
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                for (DataSnapshot ds : snapshot.getChildren()){
-//                    HashMap<String, Object> map = new HashMap<String, Object>();
-//
-//                    String food_name = (String) ds.child("food_name").getValue();
-//                    String food_serving_size = (String) ds.child("food_serving_size").getValue();
-//                    String food_cal = (String) ds.child("food_cal").getValue();
-//                    String food_pt = (String) ds.child("food_protein").getValue();
-//                    String food_carbs = (String) ds.child("food_carbs").getValue();
-//                    String food_fat = (String) ds.child("food_fat").getValue();
-//
-//                    Log.d(TAG, "food_name:"+food_name);
-//                    Log.d(TAG, "food_serving_size:"+food_serving_size);
-//                    Log.d(TAG, "food_cal:"+food_cal);
-//                    Log.d(TAG, "food_pt:"+food_pt);
-//                    Log.d(TAG, "food_carbs:"+food_carbs);
-//                    Log.d(TAG, "food_fat:"+food_fat);
-//
-//                    String[] food_arr = {food_name, food_serving_size, food_cal, food_pt, food_carbs, food_fat};
-//                    Intent intent = new Intent(context, FoodDataActivity.class);
-//                    Bundle bundle = new Bundle();
-//                    bundle.putStringArray("food_arr", food_arr);
-//                    intent.putExtras(bundle);
-//                    for (String str : food_arr){
-//                        Log.d(TAG, "food_arr:"+str);
-//                    }
-//
-//                    startActivity(intent);
-//                    finish();
-//
-
-
-
-
-
-//                    //自己檢查用
-//                    if (food_name.length()!=0) {
-//                        Log.d(TAG, "food_name:" + food_name);
-//                        map.put("food_name", food_name);
-//                    } else {
-//                        Log.d(TAG, "data doesn't exist");
-//                    }
-
-
-
-//                    Log.d(TAG, "food_arr:"+food_arr[0]);
-//                    int i;
-//                    for(i=0; i<food_arr.length; i++) {
-//                        switch (food_arr[i]) {
-//                            case :
-//                                break;
-//
-//                        }
-//                    }
-//
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }   //end setDBData()
-
-
-
-    //TODO:使用者按下同意拍照後，進行拍照，[未完成]上傳，將照片顯示在iv上的動作
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void button_press(View v) {
-        Toast.makeText(context, "拍照", Toast.LENGTH_SHORT).show();
-
-        //確認使用者是否按下同意
-        if (this.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            String[] permission = {Manifest.permission.CAMERA};
-            this.requestPermissions(permission, MY_CAMERA_PERMISSION_CODE);
-
-
-        } else {
-            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            this.startActivityForResult(cameraIntent, CAMERA_REQUEST);
-
-        } //end if(checkSelfPermission)
-
-       // busy.setVisibility(View.VISIBLE);
-
-
-
-
-//        task.addOnCompleteListener(
-//
-//                new OnCompleteListener<UploadTask.TaskSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-//                        MainActivity.this.runOnUiThread(
-//                                new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        busy.setVisibility(View.INVISIBLE);
-//                                    }
-//                                }
-//                        );
-//                    }
-//                }
-//        );    //end addOnCompleteListener()
-//
-//        task.addOnProgressListener(
-//                new OnProgressListener<UploadTask.TaskSnapshot>() {
-//                    @Override
-//                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-//                        long byte_to_go = taskSnapshot.getBytesTransferred();
-//                        //Log.i("上傳", "送出 " + byte_to_go + " BYTEs");
-//
-//                        final double every_time_percent = (double) byte_to_go / total;
-//                        Log.i("上傳", "送出 " + every_time_percent * 100 + " %");
-//                        MainActivity.this.runOnUiThread(
-//                                new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        progress.setProgress((int) (every_time_percent * 100));
-//                                    }
-//                                }
-//                        );
-//
-//                    }
-//                }
-//        );  //end addOnProgressListener()
-
-    }   //end button_press()
 
 
 

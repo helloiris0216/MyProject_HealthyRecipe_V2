@@ -8,17 +8,42 @@
     tools:context=".RegisterActivity">
 
 
+    <ImageView
+        android:id="@+id/iv_userPic"
+        android:layout_width="204dp"
+        android:layout_height="246dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/user_pic_icon" />
+
+    <Button
+        android:id="@+id/btn_take"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:text="拍照"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_userPic" />
+
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/btn_take">
 
         <TextView
             android:id="@+id/textView2"
@@ -29,14 +54,14 @@
             android:gravity="center_vertical"
             android:text="暱稱 : "
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="normal" />
 
         <EditText
             android:id="@+id/editText_username_R"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:ems="9"
+            android:ems="6"
             android:hint="username"
             android:inputType="textPersonName" />
 
@@ -70,7 +95,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,14 +112,14 @@
             android:gravity="center|left"
             android:text="Email : "
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="normal" />
 
         <EditText
             android:id="@+id/editText_email_R"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ems="10"
+            android:ems="7"
             android:inputType="textEmailAddress" />
     </LinearLayout>
 
@@ -103,7 +128,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -119,7 +144,7 @@
             android:gravity="center_vertical"
             android:text="密碼 : "
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="normal" />
 
         <EditText
             android:id="@+id/editText_psw_R"
@@ -136,8 +161,7 @@
             android:layout_weight="1"
             android:text="off"
             android:textAlignment="center"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <Button
@@ -145,7 +169,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="85dp"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="16dp"
         android:text="取消"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
@@ -154,7 +178,7 @@
         android:id="@+id/btn_register_R"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="85dp"
         android:text="註冊"
         app:layout_constraintEnd_toEndOf="parent"
@@ -165,12 +189,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#D7F4F8"
+        app:itemIconTint="@null"
+        app:itemTextColor="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:itemIconTint="@null"
-        app:itemTextColor="@null"
         app:menu="@menu/bottom_navigation_menu" />
 
 
