@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EFE6E1"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -23,6 +24,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:itemIconTint="@null"
+        app:itemTextColor="@null"
         app:menu="@menu/bottom_navigation_menu" />
 
 

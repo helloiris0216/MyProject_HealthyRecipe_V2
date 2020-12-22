@@ -2,11 +2,12 @@ package com.example.myProject_HealthyRecipesApp;
 //TODO:[目標:完成]取得FoodDataActivity傳出的 weight，並在此類別進行運算，最後將運算結果傳到DiaryActivity中的tv顯示
 
 
+import android.content.Intent;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 
 public class Calculate {
@@ -33,7 +34,6 @@ public class Calculate {
 
         FoodDataActivity fda = new FoodDataActivity();
         weight_num = fda.getWeight();
-
         Log.d(TAG, "weight_num:" + weight_num);
 
 

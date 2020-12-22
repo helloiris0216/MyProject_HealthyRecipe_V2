@@ -219,4 +219,4 @@ public class FoodDataActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-}   //end
+}//end

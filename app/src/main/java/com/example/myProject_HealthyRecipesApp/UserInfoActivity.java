@@ -35,6 +35,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -57,7 +58,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private ImageView iv;
     private EditText etEmail, etPsw;
     private Switch switchPsw;
-    private Button btnLogin, btnRegister, btnLogout;
+    private Button btnLogin, btnRegister, btnLogout, btnUpload;
     private String TAG = "main";
     private FirebaseAuth authControl;
 
@@ -68,6 +69,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private Bitmap theImage;
     private StorageReference mStorageRef;
     private Context context;
+    private BottomNavigationView bottomNavigation;
 
 
 
@@ -80,14 +82,14 @@ public class UserInfoActivity extends AppCompatActivity {
         context = this;
         setTitle("My Information");
 
+
         //TODO:設定action bar上的返回鍵 1
         ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
 
-
-
         findViews();
         setListener();
+
 
         //TODO:取得firebase的console:https://fir-app-60599.firebaseio.com/class
         //所有的方法都放在library內，要建立物件來使用這些方法
@@ -132,6 +134,43 @@ public class UserInfoActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new MyButton());
 
         iv.setOnClickListener(new MyButton());
+
+        //TODO:監聽bottomNaigation(最下方的action bar)，並設定使用者按下後會跳轉到指定頁面
+        bottomNavigation.setItemIconTintList(null);
+        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+
+                    //回首頁
+                    case R.id.homePage:
+                        Toast.makeText(context, "回首頁", Toast.LENGTH_SHORT).show();
+                        Intent intent_home = new Intent(context, HomePageActivity.class);
+                        startActivity(intent_home);
+
+                        break;
+
+                    //回個人資訊頁
+                    case R.id.user:
+                        Toast.makeText(context, "回使用者資訊頁", Toast.LENGTH_SHORT).show();
+                        Intent intent_user = new Intent(context, UserInfoActivity.class);
+                        startActivity(intent_user);
+
+                        break;
+
+                    //到我的日記頁
+                    case R.id.diary:
+                        Toast.makeText(context, "我的日記", Toast.LENGTH_SHORT).show();
+                        Intent intent_diary = new Intent(context, DiaryActivity.class);
+                        startActivity(intent_diary);
+
+                        break;
+
+                } //end switch
+
+                return true;
+            } //end onNavigationItemSelected
+        }); //end bottomNavigation listener
     } //end setListener()
 
 
@@ -147,6 +186,10 @@ public class UserInfoActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnRegister = (Button) findViewById(R.id.btn_register);
         btnLogout = (Button) findViewById(R.id.btn_logout);
+        btnUpload = (Button)findViewById(R.id.btn_upload);
+
+        bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_i);
+
     }
 
 
@@ -182,7 +225,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(UserInfoActivity.this, "登入成功", Toast.LENGTH_SHORT).show();
-                                                setDBData();
+                                                //setDBData();
 
                                                 //登入後切換到 homepage
                                                 Intent intent = new Intent(context, MainActivity.class);
@@ -221,11 +264,47 @@ public class UserInfoActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(context, RegisterActivity.class);
                     startActivity(intent);
-
+                    finish();
                     break;
 
                 case R.id.iv:
                     button_press(v);
+                    break;
+
+                case R.id.btn_upload:
+                    //將使用者的照片上傳到雲端
+                    if (v.getId() == R.id.btn_upload) {
+                        Toast.makeText(context, "upload....", Toast.LENGTH_SHORT).show();
+
+
+                        //將ImageView 中的圖片化為  byte 陣列
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+                        //將照片壓縮到 byteArray
+                        theImage.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                        //final long total = blob.length;
+                        byte[] blob = stream.toByteArray(); //將壓縮檔轉成byte[]
+
+                        //將照片存在子節點
+                        StorageReference leaf = mStorageRef.child("user_pic.jpg");
+                        UploadTask task = leaf.putBytes(blob);
+                        task.addOnSuccessListener(
+                                new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        Toast.makeText(context, "upload....成功", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                        );
+                        task.addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "upload....失敗", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                        );
+                    } //end if(isTook)
                     break;
 
             } //end switch
@@ -258,7 +337,9 @@ public class UserInfoActivity extends AppCompatActivity {
             theImage = (Bitmap) data.getExtras().get("data");
             iv.setImageBitmap(theImage);
         }
-    }   //end onActivityResult()
+    }//end onActivityResult()
+
+    
 
     //當使用者按下同意就跑這個函數
     @Override
@@ -276,69 +357,48 @@ public class UserInfoActivity extends AppCompatActivity {
     }   //end onRequestPermissionsResult()
 
 
-    //TODO[未完成]:setDBData() -> read data form firebase(food_database)
-    private void setDBData() {
-        Log.d(TAG, "setDBData: start");
-
-        //取得 realtime database 目前的狀態
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("food_databse");
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @SuppressLint("RestrictedApi")
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                for (DataSnapshot ds : snapshot.getChildren()){
-                    HashMap<String, Object> map = new HashMap<String, Object>();
-
-                    String food_name = (String) ds.child("food_name").getValue();
-                    String food_serving_size = (String) ds.child("food_serving_size").getValue();
-                    String food_cal = (String) ds.child("food_cal").getValue();
-                    String food_pt = (String) ds.child("food_protein").getValue();
-                    String food_carbs = (String) ds.child("food_carbs").getValue();
-                    String food_fat = (String) ds.child("food_fat").getValue();
-
-                    Log.d(TAG, "food_name:"+food_name);
-                    Log.d(TAG, "food_serving_size:"+food_serving_size);
-                    Log.d(TAG, "food_cal:"+food_cal);
-                    Log.d(TAG, "food_pt:"+food_pt);
-                    Log.d(TAG, "food_carbs:"+food_carbs);
-                    Log.d(TAG, "food_fat:"+food_fat);
-
-                    String[] food_arr = {food_name, food_serving_size, food_cal, food_pt, food_carbs, food_fat};
-                    Intent intent = new Intent(context, FoodDataActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putStringArray("food_arr", food_arr);
-                    intent.putExtras(bundle);
-                    for (String str : food_arr){
-                        Log.d(TAG, "food_arr:"+str);
-                    }
-
-                    startActivity(intent);
-
-
-
-//                    //使用map放
-//                    map.put("food_name", food_name);
-//                    map.put("food_serving_size", food_serving_size);
-//                    map.put("food_cal", food_cal);
-//                    map.put("food_pt", food_pt);
-//                    map.put("food_carbs", food_carbs);
-//                    map.put("food_fat", food_fat);
+//    //TODO[未完成]:setDBData() -> read data form firebase(food_database)
+//    private void setDBData() {
+//        Log.d(TAG, "setDBData: start");
 //
-//                    List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-//                    list.add(map);
+//        //取得 realtime database 目前的狀態
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        final DatabaseReference myRef = database.getReference("food_databse");
 //
+//        myRef.addValueEventListener(new ValueEventListener() {
+//            @SuppressLint("RestrictedApi")
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                for (DataSnapshot ds : snapshot.getChildren()){
+//                    HashMap<String, Object> map = new HashMap<String, Object>();
+//
+//                    String food_name = (String) ds.child("food_name").getValue();
+//                    String food_serving_size = (String) ds.child("food_serving_size").getValue();
+//                    String food_cal = (String) ds.child("food_cal").getValue();
+//                    String food_pt = (String) ds.child("food_protein").getValue();
+//                    String food_carbs = (String) ds.child("food_carbs").getValue();
+//                    String food_fat = (String) ds.child("food_fat").getValue();
+//
+//                    Log.d(TAG, "food_name:"+food_name);
+//                    Log.d(TAG, "food_serving_size:"+food_serving_size);
+//                    Log.d(TAG, "food_cal:"+food_cal);
+//                    Log.d(TAG, "food_pt:"+food_pt);
+//                    Log.d(TAG, "food_carbs:"+food_carbs);
+//                    Log.d(TAG, "food_fat:"+food_fat);
+//
+//                    String[] food_arr = {food_name, food_serving_size, food_cal, food_pt, food_carbs, food_fat};
 //                    Intent intent = new Intent(context, FoodDataActivity.class);
 //                    Bundle bundle = new Bundle();
-//
-//                    ArrayList bundleList = new ArrayList();
-//                    bundleList.add(list);
-//                    bundle.putParcelableArrayList("list", bundleList);
+//                    bundle.putStringArray("food_arr", food_arr);
 //                    intent.putExtras(bundle);
-
-
+//                    for (String str : food_arr){
+//                        Log.d(TAG, "food_arr:"+str);
+//                    }
+//
+//                    startActivity(intent);
+//                    finish();
+//
 
 
 
@@ -363,21 +423,17 @@ public class UserInfoActivity extends AppCompatActivity {
 //
 //                        }
 //                    }
-
-
-
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }   //end setDBData()
-
+//
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }   //end setDBData()
 
 
 
@@ -395,43 +451,6 @@ public class UserInfoActivity extends AppCompatActivity {
         } else {
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             this.startActivityForResult(cameraIntent, CAMERA_REQUEST);
-
-            //將使用者的照片上傳到雲端
-            Boolean isTook;
-            isTook = true;
-            if (isTook) {
-                Toast.makeText(context, "upload....", Toast.LENGTH_SHORT).show();
-
-
-                //將ImageView 中的圖片化為  byte 陣列
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-                //將照片壓縮到 byteArray
-                theImage.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                //final long total = blob.length;
-                byte[] blob = stream.toByteArray(); //將壓縮檔轉成byte[]
-
-                //將照片存在子節點
-                StorageReference leaf = mStorageRef.child("user_pic.jpg");
-                UploadTask task = leaf.putBytes(blob);
-                task.addOnSuccessListener(
-                        new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(context, "upload....成功", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                );
-                task.addOnFailureListener(
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(context, "upload....失敗", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                );
-                isTook = false;
-            } //end if(isTook)
 
         } //end if(checkSelfPermission)
 
@@ -483,4 +502,4 @@ public class UserInfoActivity extends AppCompatActivity {
 
 
 
-}
+}// end

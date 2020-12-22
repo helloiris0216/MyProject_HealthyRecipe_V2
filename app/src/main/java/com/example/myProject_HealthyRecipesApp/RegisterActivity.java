@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,7 +42,6 @@ import java.util.HashMap;
 public class RegisterActivity extends AppCompatActivity {
 
     private Context context;
-    private ImageView iv_R;
     private EditText et_username, et_email_R, et_psw_R;
     private Button btn_cancel, btn_register;
     private RadioGroup rg_gender;
@@ -51,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth authControl;
     private Switch switch_psw_R;
+    private BottomNavigationView bottomNavigation;
 
 
     //TODO:初始化
@@ -83,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     //TODO:setListener()
     private void setListener() {
-
+        //監聽switch btn
         switch_psw_R.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -120,15 +121,48 @@ public class RegisterActivity extends AppCompatActivity {
                         break;
                 }
             }
-        });
-    }
+        });//end radio btn
+
+        //監聽bottomNaigation
+        bottomNavigation.setItemIconTintList(null);
+        bottomNavigation.setItemTextColor(null);
+        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+
+                    //回首頁
+                    case R.id.homePage:
+                        Toast.makeText(context, "回首頁", Toast.LENGTH_SHORT).show();
+                        Intent intent_home = new Intent(context, HomePageActivity.class);
+                        startActivity(intent_home);
+                        finish();
+                        break;
+
+                    //回個人資訊頁
+                    case R.id.user:
+                        Toast.makeText(context, "回使用者資訊頁", Toast.LENGTH_SHORT).show();
+                        Intent intent_user = new Intent(context, UserInfoActivity.class);
+                        startActivity(intent_user);
+                        finish();
+                        break;
+
+                    //到我的日記頁
+                    case R.id.diary:
+                        Toast.makeText(context, "我的日記", Toast.LENGTH_SHORT).show();
+                        Intent intent_diary = new Intent(context, DiaryActivity.class);
+                        startActivity(intent_diary);
+                        finish();
+                        break;
+                }
+                return true;
+            } //end onNavigationItemSelected
+        }); //end bottomNavigation listener
+    }//end setListener()
 
 
     //TODO:findViews()
     private void findViews() {
-
-        iv_R = findViewById(R.id.iv_R);
-
         switch_psw_R = findViewById(R.id.switch_psw_R);
 
         et_username = findViewById(R.id.editText_username_R);
@@ -139,9 +173,10 @@ public class RegisterActivity extends AppCompatActivity {
         rg_male = findViewById(R.id.rBtn_male_R);
         rg_female = findViewById(R.id.rBtn_female_R);
 
-
         btn_cancel = findViewById(R.id.btn_cancel_R);
         btn_register = findViewById(R.id.btn_register_R);
+
+        bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_r);
     }
 
     //TODO:設定action bar上的返回鍵 2
@@ -157,7 +192,7 @@ public class RegisterActivity extends AppCompatActivity {
     } //end onOptionsItemSelected()
 
 
-    //TODO:MyButton()，監聽 btn_cancel & btn_register
+    //TODO:MyButton()方法
     private class MyButton implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -253,8 +288,6 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         //TODO:將註冊的資料照片上傳到 firebase storage
+    }// end updateUI()
 
-    }
-
-
-}
+}//end
