@@ -79,11 +79,12 @@ public class DiaryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary);
 
-        setTitle("My Diary");
+        setTitle("我的日記");
         context = this;
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_d);
         tv_foodData = findViewById(R.id.tv_foodData);
         btn_ok = findViewById(R.id.btn_ok);
+        et_goal =  findViewById(R.id.et_goal);
 
         setNavigation();
 
@@ -105,14 +106,14 @@ public class DiaryActivity extends AppCompatActivity {
         } else {
             Log.i("XXXXX", "Come from other");
             setPref();
-            savePref();
+            display_pref();
         }
 
 
         //TODO:[1]計算機:請使用者輸入目標熱量，並做偏好設定、計算熱量盈餘
         //1.取得 ui 元件
         et_goal = findViewById(R.id.et_goal);
-        if (et_goal.length() == 0) {
+        if (et_goal.getText().toString().length() == 0) {
             //2.跳出吐司
             Toast.makeText(context, "請輸入每日熱量目標", Toast.LENGTH_SHORT).show();
         }
@@ -335,7 +336,7 @@ public class DiaryActivity extends AppCompatActivity {
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (et_goal.length()==0){
+                if (et_goal.getText().toString().length()==0){
                     Toast.makeText(context, "請輸入每日的目標熱量", Toast.LENGTH_SHORT).show();
 
                 } else {
@@ -376,24 +377,33 @@ public class DiaryActivity extends AppCompatActivity {
     }
 
     //onPause()呼叫
-    private void savePref() {
+    private void display_pref() {
         //2.取得偏好設定
         //[1] 計算機
         //3.將 pref 設定給 et_goal
         String goal_str = getSharedPreferences("cal_goal", MODE_PRIVATE).getString("GOAL", "");
         Log.d(TAG, "goal_str:" + goal_str);
+        if (et_goal.getText().toString().length() == 0) {
+            Log.d(TAG, "et_goal.getText().length(): " + tv_food_d.getText().length());
+
+            et_goal.setText(goal_str);
+        }else{
+            et_goal.setText("no data to show");
+        }
 
         //[2] listView tv
         String tv_br = getSharedPreferences("tv_content", MODE_PRIVATE).getString("TV_BR", "");
         Log.d(TAG, "TV_BR(savePref):" + tv_br);
 
-        if (tv_food_d.getText().length() == 0) {
+        if (tv_food_d.getText().toString().length() == 0) {
             Log.d(TAG, "tv_food_d.getText().length(): " + tv_food_d.getText().length());
 
             tv_food_d.setText(tv_br);
+        }else{
+            tv_food_d.setText("no data to show");
         }
 
-    }
+    }//end display_pref()
 
 
     //TODO:監聽bottomNaigation(最下方的action bar)，並設定使用者按下後會跳轉到指定頁面

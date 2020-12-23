@@ -74,7 +74,7 @@ public class UserInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_info);
 
         context = this;
-        setTitle("My Information");
+        setTitle("我的資訊");
 
 
         //TODO:設定action bar上的返回鍵 1

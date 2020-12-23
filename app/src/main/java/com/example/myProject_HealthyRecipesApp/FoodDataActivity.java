@@ -64,6 +64,7 @@ public class FoodDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fooddata);
 
         context = this;
+        setTitle("食物列表");
 
         //TODO:action bar 1
         ActionBar bar = getSupportActionBar();
