@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.Manifest;
 import android.app.Activity;
@@ -67,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     private Bitmap theImage;
     private StorageReference mStorageRef;
-
+    private ConstraintLayout constraint;
 
 
     //TODO:初始化
@@ -158,7 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
                     //回首頁
                     case R.id.homePage:
                         Toast.makeText(context, "回首頁", Toast.LENGTH_SHORT).show();
-                        Intent intent_home = new Intent(context, HomePageActivity.class);
+                        Intent intent_home = new Intent(context, HomeActivity.class);
                         startActivity(intent_home);
                         finish();
                         break;
@@ -202,6 +203,8 @@ public class RegisterActivity extends AppCompatActivity {
         btn_take = findViewById(R.id.btn_take);
         iv_user_pic = findViewById(R.id.iv_userPic);
 
+        constraint = findViewById(R.id.constraint_res);
+        constraint.getBackground().setAlpha(180);
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_r);
     }
 

@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +30,6 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -41,9 +41,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -65,6 +63,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private Context context;
     private BottomNavigationView bottomNavigation;
     private ProgressBar progress;
+    private ConstraintLayout constraint;
 
 
     //TODO:設定初始值
@@ -139,7 +138,7 @@ public class UserInfoActivity extends AppCompatActivity {
                     //回首頁
                     case R.id.homePage:
                         Toast.makeText(context, "回首頁", Toast.LENGTH_SHORT).show();
-                        Intent intent_home = new Intent(context, HomePageActivity.class);
+                        Intent intent_home = new Intent(context, HomeActivity.class);
                         startActivity(intent_home);
 
                         break;
@@ -182,6 +181,8 @@ public class UserInfoActivity extends AppCompatActivity {
         btnLogout = (Button) findViewById(R.id.btn_logout);
         btnDownload = (Button)findViewById(R.id.btn_download);
 
+        constraint = findViewById(R.id.constraint_info);
+        constraint.getBackground().setAlpha(180);
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_i);
 
         progress = (ProgressBar) findViewById(R.id.progressBar);
@@ -224,7 +225,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                                 //setDBData();
 
                                                 //登入後切換到 homepage
-                                                Intent intent = new Intent(context, MainActivity.class);
+                                                Intent intent = new Intent(context, HomeActivity.class);
                                                 startActivity(intent);
 
                                                 //TODO[未完成]:使用者登入後將照片從firebase上抓下來並顯示在imageView

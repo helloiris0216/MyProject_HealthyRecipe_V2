@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EFE6E1"
+    android:background="@drawable/bg_food"
     tools:context=".UserInfoActivity">
 
     <ImageView
@@ -126,12 +127,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#D7F4F8"
+        app:itemIconTint="@null"
+        app:itemTextColor="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:itemIconTint="@null"
-        app:itemTextColor="@null"
         app:menu="@menu/bottom_navigation_menu" />
 
     <Button

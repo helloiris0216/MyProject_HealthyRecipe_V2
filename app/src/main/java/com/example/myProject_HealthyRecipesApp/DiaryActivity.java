@@ -11,6 +11,7 @@ package com.example.myProject_HealthyRecipesApp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +51,7 @@ public class DiaryActivity extends AppCompatActivity {
     private List<Calculate> list_calculate;
     private Calculate data_fromCal;
     private String data;
+    private ConstraintLayout constraintLayout;
 
     //[★★★] 紀錄被點選的位置
     static int clickedItem = -1;
@@ -85,6 +87,8 @@ public class DiaryActivity extends AppCompatActivity {
         tv_foodData = findViewById(R.id.tv_foodData);
         btn_ok = findViewById(R.id.btn_ok);
         et_goal =  findViewById(R.id.et_goal);
+        constraintLayout = findViewById(R.id.constraint_diary);
+        constraintLayout.getBackground().setAlpha(180);
 
         setNavigation();
 
@@ -418,7 +422,7 @@ public class DiaryActivity extends AppCompatActivity {
                     //回首頁
                     case R.id.homePage:
                         Toast.makeText(context, "回首頁", Toast.LENGTH_SHORT).show();
-                        Intent intent_home = new Intent(context, HomePageActivity.class);
+                        Intent intent_home = new Intent(context, HomeActivity.class);
                         startActivity(intent_home);
                         //設為"無選取項目"狀態
                         hasClickedItem = false;
