@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">HEALTHY RECIPES</string>
 
+    <string name="text">
+        我是說明我是說明我是說明我是說明我是說明我是說明我是說明我是說明我是說明我是說明我是說明我是說明
+    </string>
+
     <string-array name="arr_meal">
         <item>早餐</item>
         <item>午餐</item>

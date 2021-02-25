@@ -88,7 +88,7 @@ public class DiaryActivity extends AppCompatActivity {
         btn_ok = findViewById(R.id.btn_ok);
         et_goal =  findViewById(R.id.et_goal);
         constraintLayout = findViewById(R.id.constraint_diary);
-        constraintLayout.getBackground().setAlpha(180);
+        constraintLayout.getBackground().setAlpha(125);
 
         setNavigation();
 

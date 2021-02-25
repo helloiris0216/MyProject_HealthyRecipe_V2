@@ -45,10 +45,9 @@ public class HomeActivity extends AppCompatActivity {
 
         context = this;
 
-
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
         constraint = findViewById(R.id.constraint);
-        constraint.getBackground().setAlpha(180);
+        constraint.getBackground().setAlpha(125);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView_home);
         recyclerView_02 = (RecyclerView) findViewById(R.id.recyclerView02);
 

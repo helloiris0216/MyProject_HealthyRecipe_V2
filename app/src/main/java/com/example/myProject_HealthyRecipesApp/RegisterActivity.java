@@ -204,7 +204,7 @@ public class RegisterActivity extends AppCompatActivity {
         iv_user_pic = findViewById(R.id.iv_userPic);
 
         constraint = findViewById(R.id.constraint_res);
-        constraint.getBackground().setAlpha(180);
+        constraint.getBackground().setAlpha(125);
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_r);
     }
 

@@ -182,7 +182,7 @@ public class UserInfoActivity extends AppCompatActivity {
         btnDownload = (Button)findViewById(R.id.btn_download);
 
         constraint = findViewById(R.id.constraint_info);
-        constraint.getBackground().setAlpha(180);
+        constraint.getBackground().setAlpha(125);
         bottomNavigation = (BottomNavigationView) findViewById(R.id.bottom_navigation_i);
 
         progress = (ProgressBar) findViewById(R.id.progressBar);

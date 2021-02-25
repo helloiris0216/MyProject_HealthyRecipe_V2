@@ -2,7 +2,9 @@ package com.example.myProject_HealthyRecipesApp;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +29,31 @@ public class LinearAdapter extends RecyclerView.Adapter<LinearAdapter.ViewHolder
 
     // 建立 ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
+
         private final ImageView iv_imgId;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             // 宣告元件
             iv_imgId = (ImageView) itemView.findViewById(R.id.iv_item);
+
+            //將選中的圖片傳到 RecipesActivity
+            iv_imgId.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int index = (int) iv_imgId.getTag();
+                    Log.d("adapter", "onClick:index="+index);
+                    Map<String, Object> data = myImgList.get(index);
+                    int num = (int) data.get("image");
+                    String title = "LOW CALORIES";
+                    Intent intent = new Intent(myContext, RecipesActivity.class);
+                    intent.putExtra("title", title);
+                    intent.putExtra("image", num);
+                    myContext.startActivity(intent);
+
+                }
+            });
+
 
 
         } //end constrctor
