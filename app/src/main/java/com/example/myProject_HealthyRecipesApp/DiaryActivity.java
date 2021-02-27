@@ -13,6 +13,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,12 +30,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.snapshot.ChildKey;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import test.User;
 
 import static com.example.myProject_HealthyRecipesApp.FoodDataHolder.list;
 
@@ -44,7 +53,7 @@ public class DiaryActivity extends AppCompatActivity {
     private static String[] arr_mealName, arr_foodData, arr_foodCal;
     private Context context;
     private ListView listView_diary;
-    private TextView tv_meal_d, tv_addFood_d, tv_cal_d, tv_food_d, tv_remaining, tv_foodData;
+    private TextView tv_food_d, tv_remaining, tv_foodData;
     private HashMap<String, Object> meal_data;
     private String TAG = "diary_activity";
     private List<Map<String, Object>> list_meal;
@@ -75,11 +84,18 @@ public class DiaryActivity extends AppCompatActivity {
     private Button btn_ok;
 
 
+    private DatabaseReference mDatabase;
+
+
     //TODO:初始化
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference("data").push();
+
+        //writeNewUser("01", "AAA", "aaa@gmail.com");
 
         setTitle("我的日記");
         context = this;
@@ -135,6 +151,7 @@ public class DiaryActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     //TODO:[1]在 listView 上顯示早餐、午餐、晚餐、點心(meal name)
     //TODO:[2]在 listView 上顯示由 Calculate class 傳過來的運算結果
@@ -239,6 +256,7 @@ public class DiaryActivity extends AppCompatActivity {
                             "脂質: " + df.format(Double.parseDouble(fat)) + " g\n";
 
 
+
             //[2]-4 & [3]-1.取得食物的 cal
             Log.d(TAG, "確認資料>>>");
             cal_c = Double.parseDouble(data_fromCal.getCal_cal().toString());
@@ -289,7 +307,36 @@ public class DiaryActivity extends AppCompatActivity {
                 list_meal.add(meal_data);
             }
 
+
+            /**firebase*/
+            mDatabase.child("info").child("品名").setValue(name);
+            mDatabase.child("info").child("份量").setValue(size);
+            mDatabase.child("info").child("卡路里").setValue(cal);
+            mDatabase.child("info").child("蛋白質").setValue(pt);
+            mDatabase.child("info").child("碳水化合物").setValue(carbs);
+            mDatabase.child("info").child("脂質").setValue(fat);
+
         }//end != -1
+
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "getValue:"+snapshot.getValue());
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };mDatabase.child("info").addValueEventListener(postListener);
+
+
+
+
 
         //[1]-6 & 2-[7].將要顯示的清單存入到 adapter
         final SimpleAdapter adapterNew = new SimpleAdapter(context, list_meal, R.layout.diary_listview_item_layout,
@@ -321,6 +368,7 @@ public class DiaryActivity extends AppCompatActivity {
 
             }
         }); //end listener
+
     }//end findAndPutData()
 
     @Override
@@ -453,6 +501,15 @@ public class DiaryActivity extends AppCompatActivity {
             } //end onNavigationItemSelected
         }); //end bottomNavigation listener
     } //end setListener
+
+
+//    /**TEST */
+////    public void writeNewUser(String userId, String name, String email) {
+////        User user = new User(name, email);
+////
+////        mDatabase.child("users").child(userId).setValue(user);
+////    }
+
 
 
 }//end activity
