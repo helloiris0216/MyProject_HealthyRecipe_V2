@@ -208,14 +208,14 @@ public class UserInfoActivity extends AppCompatActivity {
                         String email = etEmail.getText().toString();
                         String psw = etPsw.getText().toString();
 
-                        //currentUser,因為firebase一次只能一個人登入，所以如果有人登入firebase，就將他登出(強迫上一位使用者登出)。
-                        currentUser = authControl.getCurrentUser();
-                        if (currentUser != null) {
-                            authControl.signOut();
-                        }
+//                        //currentUser,因為firebase一次只能一個人登入，所以如果有人登入firebase，就將他登出(強迫上一位使用者登出)。
+//                        currentUser = authControl.getCurrentUser();
+//                        if (currentUser != null) {
+//                            authControl.signOut();
+//                        }
 
                         //使用帳號與密碼登入:signInWith，並監聽authControl
-                        else {
+//                        else {
                             authControl.signInWithEmailAndPassword(email, psw)
                                     .addOnCompleteListener(UserInfoActivity.this, new OnCompleteListener<AuthResult>() {
                                         @Override
@@ -238,7 +238,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                     });
                         }
 
-                    } //end case R.id.button_login - if
+//                    } //end case R.id.button_login - if
                     break;
 
                 //登出

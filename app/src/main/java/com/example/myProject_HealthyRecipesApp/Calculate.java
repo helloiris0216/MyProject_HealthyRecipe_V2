@@ -71,7 +71,7 @@ public class Calculate {
             Log.d(TAG, "fat:"+fat);
 
             //3-2 計算
-            size = (weight_num * size) / 100;
+            size = weight_num;
             cal = (weight_num * cal) / 100;
             pt = (weight_num * pt) / 100;
             carbs = (weight_num * carbs) / 100;

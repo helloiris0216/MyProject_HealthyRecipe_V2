@@ -301,44 +301,40 @@ public class RegisterActivity extends AppCompatActivity {
     //Change UI according to user data.
     public void updateUI(FirebaseUser account, String username, String email, String psw){
 
-        if(account != null){
-            Toast.makeText(this,"登入成功",Toast.LENGTH_LONG).show();
-            startActivity(new Intent(context,UserInfoActivity.class));
-
-        }else {
-            Toast.makeText(this,"登入失敗",Toast.LENGTH_LONG).show();
+        if(account != null) {
+            //Toast.makeText(this, "登入成功", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(context, UserInfoActivity.class));
         }
 
-
         //TODO:將註冊的資料(暱稱、帳號、密碼、照片上傳到 firebase_realtime database)
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("user");
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("user");
+//
+//        HashMap<String, Object> data = new HashMap<String, Object>();
+//        data.put("username", username);
+//        data.put("email", email);
+//        data.put("password", psw);
+//
+//        Task<Void> result = myRef.child("").push().setValue(data);
+//        result.addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                Toast.makeText(context, "資料上傳成功", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//        result.addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Toast.makeText(context, "資料上傳失敗", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//        //busy.setVisibility(View.VISIBLE);
+//        Toast.makeText(context, "上傳中....", Toast.LENGTH_LONG).show();
 
-        HashMap<String, Object> data = new HashMap<String, Object>();
-        data.put("username", username);
-        data.put("email", email);
-        data.put("password", psw);
 
-        Task<Void> result = myRef.child("").push().setValue(data);
-        result.addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(context, "資料上傳成功", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        result.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(context, "資料上傳失敗", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        //busy.setVisibility(View.VISIBLE);
-        Toast.makeText(context, "上傳中....", Toast.LENGTH_LONG).show();
-
-
-        //將ImageView 中的圖片化為  byte 陣列
+        /**將ImageView 中的圖片化為  byte 陣列*/
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         byte[] blob;//ContentValues 需要放入圖片,但必須是byte[]形式
 
