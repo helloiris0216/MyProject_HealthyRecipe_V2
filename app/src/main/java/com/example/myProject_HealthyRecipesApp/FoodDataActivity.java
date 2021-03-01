@@ -25,6 +25,12 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +53,8 @@ public class FoodDataActivity extends AppCompatActivity {
     private ArrayList<String> name_list;
     private ArrayList<Double> size_list, pt_list, cal_list, carbs_list, fat_list;
     private static HashMap<String, Object> map;
+    private DatabaseReference mDatabase;
+    private List<Object> nameList, calList, proList, carbsList, fatList, sizeList;
 
 
     public HashMap<String, Object> getMap(){
@@ -66,65 +74,131 @@ public class FoodDataActivity extends AppCompatActivity {
         context = this;
         setTitle("食物列表");
 
+        /**firebase*/
+        mDatabase = FirebaseDatabase.getInstance().getReference("food data");
+
+
+
         //TODO:action bar 1
         ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
 
         lv_fooddata = findViewById(R.id.lv_food_data);
-        findAndPutData();
+        //findAndPutData();
+        show();
         setListener();
 
     } //end onCreate()
 
 
-    //TODO:findAndPutData():抓出JSON上食物的資料(資料由FoodDataHolder傳過來)
-    private void findAndPutData() {
-        //1.印出確認取得的list是否正確
-        Log.d(TAG, "list"+list);    //確認有取到list
-        Log.d(TAG, "list size:"+list.size());   //確認拿到list大小
+    //TODO 抓取 firebase 上的資料
+    private void show(){
+        final List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        dataList.clear();
+        nameList = new ArrayList<>();
+        calList = new ArrayList<>();
+        proList = new ArrayList<>();
+        carbsList = new ArrayList<>();
+        fatList = new ArrayList<>();
+        sizeList = new ArrayList<>();
 
-        List<Map<String, Object>> list_use= new ArrayList<Map<String, Object>>();    //建立符合simpleAdapter所需要的list
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //抓資料
+                Log.d(TAG, "onDataChange: "+snapshot.getValue());
 
-        //2.將接收過來的list內的資料取出來存成個別的list
-        name_list = new ArrayList<String>();
-        size_list = new ArrayList<Double>();
-        cal_list = new ArrayList<Double>();
-        pt_list = new ArrayList<Double>();
-        carbs_list = new ArrayList<Double>();
-        fat_list = new ArrayList<Double>();
-        for (int i=0; i<list.size(); i++){
-            name_list.add(list.get(i).getName());
-            size_list.add(list.get(i).getServing_size());
-            cal_list.add(list.get(i).getCal());
-            pt_list.add(list.get(i).getProtein());
-            carbs_list.add(list.get(i).getCarbs());
-            fat_list.add(list.get(i).getFat());
-        }
+                for (DataSnapshot ds : snapshot.getChildren()){
+                    nameList.add(ds.child("name").getValue());
+                    calList.add(ds.child("cal").getValue());
+                    proList.add(ds.child("protein").getValue());
+                    carbsList.add(ds.child("carbs").getValue());
+                    fatList.add(ds.child("fat").getValue());
+                    sizeList.add(ds.child("size").getValue());
+                }
+                Log.d(TAG, "getValue:"+nameList.get(0).toString());
+                Log.d(TAG, "getValue:"+nameList.get(1).toString());
 
-        //3.將個別的list存入到list_map中。*注意:map的放法是一個key對應一個值，一條listView上就是顯示一個值。
-        for (int i=0; i<name_list.size(); i++) {
-            Map<String, Object> list_map = new HashMap<String, Object>();   //建立MAP來裝list
-            list_map.put("NAME", name_list.get(i));
-            list_map.put("SIZE", size_list.get(i)+" g");
-            list_map.put("CAL", cal_list.get(i)+" cal");
-            list_map.put("PROTEIN", pt_list.get(i)+" g");
-            list_map.put("CARBS", carbs_list.get(i)+" g");
-            list_map.put("FAT", fat_list.get(i)+" g");
+                for (int i=0; i<nameList.size(); i++){
+                    HashMap<String, Object> data_map = new HashMap<>();
+                    data_map.put("NAME", nameList.get(i));
+                    data_map.put("CAL", calList.get(i)+" cal");
+                    data_map.put("PROTEIN", proList.get(i)+" g");
+                    data_map.put("SIZE", sizeList.get(i)+" g");
+                    data_map.put("CARBS", carbsList.get(i)+" g");
+                    data_map.put("FAT", fatList.get(i)+" g");
 
-            Log.d(TAG, "list_map:"+list_map);
-            Log.d(TAG, "KEY:"+list_map.keySet());
-            list_use.add(list_map);
-        }
-        //4.印出來確認是否存放成功
-        Log.d(TAG, "list_use:"+list_use);
+                    Log.d(TAG, "data_map:"+data_map);
+                    Log.d(TAG, "KEY:"+data_map.keySet());
 
-        //5.將 list 設定給 adapter
-        SimpleAdapter test_adapter = new SimpleAdapter(context, list_use, R.layout.fooddata_listview_item_layout,
+                    dataList.add(data_map);
+                }
+
+                // 顯示
+                SimpleAdapter test_adapter = new SimpleAdapter(context, dataList, R.layout.fooddata_listview_item_layout,
                 new String[]{"NAME", "SIZE", "CAL", "PROTEIN", "CARBS", "FAT"},
                 new int[] {R.id.tv_name_f,R.id.tv_size_f, R.id.tv_cal_f, R.id.tv_pt_f, R.id.tv_carbs_f, R.id.tv_fat_f});
-        lv_fooddata.setAdapter(test_adapter);
+                lv_fooddata.setAdapter(test_adapter);
+            }
 
-    } //end findAndPutData()
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        mDatabase.addListenerForSingleValueEvent(listener );
+    }
+
+
+
+//    //TODO:findAndPutData():抓出JSON上食物的資料(資料由FoodDataHolder傳過來) (已改成抓 firebase 的資料)
+//    private void findAndPutData() {
+//        //1.印出確認取得的list是否正確
+//        Log.d(TAG, "list"+list);    //確認有取到list
+//        Log.d(TAG, "list size:"+list.size());   //確認拿到list大小
+//
+//        List<Map<String, Object>> list_use= new ArrayList<Map<String, Object>>();    //建立符合simpleAdapter所需要的list
+//
+//        //2.將接收過來的list內的資料取出來存成個別的list
+//        name_list = new ArrayList<String>();
+//        size_list = new ArrayList<Double>();
+//        cal_list = new ArrayList<Double>();
+//        pt_list = new ArrayList<Double>();
+//        carbs_list = new ArrayList<Double>();
+//        fat_list = new ArrayList<Double>();
+//        for (int i=0; i<list.size(); i++){
+//            name_list.add(list.get(i).getName());
+//            size_list.add(list.get(i).getServing_size());
+//            cal_list.add(list.get(i).getCal());
+//            pt_list.add(list.get(i).getProtein());
+//            carbs_list.add(list.get(i).getCarbs());
+//            fat_list.add(list.get(i).getFat());
+//        }
+//
+//        //3.將個別的list存入到list_map中。*注意:map的放法是一個key對應一個值，一條listView上就是顯示一個值。
+//        for (int i=0; i<name_list.size(); i++) {
+//            Map<String, Object> list_map = new HashMap<String, Object>();   //建立MAP來裝list
+//            list_map.put("NAME", name_list.get(i));
+//            list_map.put("SIZE", size_list.get(i)+" g");
+//            list_map.put("CAL", cal_list.get(i)+" cal");
+//            list_map.put("PROTEIN", pt_list.get(i)+" g");
+//            list_map.put("CARBS", carbs_list.get(i)+" g");
+//            list_map.put("FAT", fat_list.get(i)+" g");
+//
+//            Log.d(TAG, "list_map:"+list_map);
+//            Log.d(TAG, "KEY:"+list_map.keySet());
+//            list_use.add(list_map);
+//        }
+//        //4.印出來確認是否存放成功
+//        Log.d(TAG, "list_use:"+list_use);
+//
+//        //5.將 list 設定給 adapter
+//        SimpleAdapter test_adapter = new SimpleAdapter(context, list_use, R.layout.fooddata_listview_item_layout,
+//                new String[]{"NAME", "SIZE", "CAL", "PROTEIN", "CARBS", "FAT"},
+//                new int[] {R.id.tv_name_f,R.id.tv_size_f, R.id.tv_cal_f, R.id.tv_pt_f, R.id.tv_carbs_f, R.id.tv_fat_f});
+//        lv_fooddata.setAdapter(test_adapter);
+//
+//    } //end findAndPutData()
 
 
 
@@ -149,15 +223,15 @@ public class FoodDataActivity extends AppCompatActivity {
                 map = new HashMap<String, Object>();
 
                 //9.將個別 list 的內容取出並放入 map
-                map.put("NAME", name_list.get(i));
-                map.put("SIZE", size_list.get(i));
-                map.put("CAL", cal_list.get(i));
-                map.put("PROTEIN", pt_list.get(i));
-                map.put("CARBS", carbs_list.get(i));
-                map.put("FAT", fat_list.get(i));
+                map.put("NAME", nameList.get(i));
+                map.put("SIZE", sizeList.get(i));
+                map.put("CAL", calList.get(i));
+                map.put("PROTEIN", proList.get(i));
+                map.put("CARBS", carbsList.get(i));
+                map.put("FAT", fatList.get(i));
 
                 //10.印出檢查(結束)
-                Log.d(TAG, "name_list[i]:"+name_list.get(i));
+               // Log.d(TAG, "name_list[i]:"+name_list.get(i));
                 Log.d(TAG, "map_sent:"+map);
 
             }

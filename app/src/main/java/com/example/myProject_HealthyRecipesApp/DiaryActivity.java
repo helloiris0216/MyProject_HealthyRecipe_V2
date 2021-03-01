@@ -37,13 +37,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.snapshot.ChildKey;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import test.User;
 
 import static com.example.myProject_HealthyRecipesApp.FoodDataHolder.list;
 
@@ -93,7 +95,7 @@ public class DiaryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("data").push();
+        mDatabase = FirebaseDatabase.getInstance().getReference("user").push();
 
         //writeNewUser("01", "AAA", "aaa@gmail.com");
 
@@ -269,9 +271,7 @@ public class DiaryActivity extends AppCompatActivity {
             //[2]-5.將四餐的 cal 個別取出後存放在個別的變數內，利用 clickedItem 做判斷
             switch (clickedItem) {
                 case 0:
-                    //先將 br_total初始化為0.0，在將食物的 cal 相加 :
-                    // br_total=0.0
-                    // br_total = br_total + cal_c
+
                     br_total += cal_c;
 
                     //[2]-6.將個別的 total 賦值給陣列
@@ -309,32 +309,44 @@ public class DiaryActivity extends AppCompatActivity {
 
 
             /**firebase*/
-            mDatabase.child("info").child("品名").setValue(name);
-            mDatabase.child("info").child("份量").setValue(size);
-            mDatabase.child("info").child("卡路里").setValue(cal);
-            mDatabase.child("info").child("蛋白質").setValue(pt);
-            mDatabase.child("info").child("碳水化合物").setValue(carbs);
-            mDatabase.child("info").child("脂質").setValue(fat);
+            mDatabase.child("品名").setValue(name);
+            mDatabase.child("份量").setValue(size);
+            mDatabase.child("卡路里").setValue(cal);
+            mDatabase.child("蛋白質").setValue(pt);
+            mDatabase.child("碳水化合物").setValue(carbs);
+            mDatabase.child("脂質").setValue(fat);
 
         }//end != -1
 
 
-        ValueEventListener postListener = new ValueEventListener() {
-            @SuppressLint("RestrictedApi")
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d(TAG, "getValue:"+snapshot.getValue());
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };mDatabase.child("info").addValueEventListener(postListener);
-
-
+//        final List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
+//        dataList.clear();
+//
+//        ValueEventListener postListener = new ValueEventListener() {
+//            @SuppressLint("RestrictedApi")
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                dataList.clear();
+//                for (DataSnapshot ds : snapshot.getChildren()){
+//                    HashMap<String, String> map = new HashMap<String, String>();
+//                    String nameValue = (String) ds.child("品名").getValue();
+//                    String proValue = (String) ds.child("蛋白質").getValue();
+//                    Log.d(TAG, "nameValue:"+nameValue);
+//                    map.put("name", nameValue);
+//                    map.put("protein", proValue);
+//                    dataList.add(map);
+//                }
+//
+//                Log.d(TAG, "getValue:"+snapshot.getValue());
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        };mDatabase.getRoot().child("data").addValueEventListener(postListener);
 
 
 
@@ -342,6 +354,10 @@ public class DiaryActivity extends AppCompatActivity {
         final SimpleAdapter adapterNew = new SimpleAdapter(context, list_meal, R.layout.diary_listview_item_layout,
                 new String[]{"MEALNAME", "FOOD", "CAL"},
                 new int[]{R.id.tv_meal_d, R.id.tv_food_d, R.id.tv_cal_d});
+//        final SimpleAdapter adapterNew = new SimpleAdapter(context, dataList, R.layout.diary_listview_item_layout,
+//                new String[]{"name", "protein", "CAL"},
+//                new int[]{R.id.tv_meal_d, R.id.tv_food_d, R.id.tv_cal_d});
+
         //連結adapter
         listView_diary.setAdapter(adapterNew);
         viewNew = adapterNew.getView(positionNew, v, parent); //利用 adapter 內建的方法來取得監聽 listView 後所產生的參數
@@ -361,6 +377,7 @@ public class DiaryActivity extends AppCompatActivity {
 
                 //設為"有選取項目"狀態
                 hasClickedItem = true;
+
 
                 //跳頁
                 Intent intent = new Intent(context, FoodDataActivity.class);
@@ -501,14 +518,6 @@ public class DiaryActivity extends AppCompatActivity {
             } //end onNavigationItemSelected
         }); //end bottomNavigation listener
     } //end setListener
-
-
-//    /**TEST */
-////    public void writeNewUser(String userId, String name, String email) {
-////        User user = new User(name, email);
-////
-////        mDatabase.child("users").child(userId).setValue(user);
-////    }
 
 
 

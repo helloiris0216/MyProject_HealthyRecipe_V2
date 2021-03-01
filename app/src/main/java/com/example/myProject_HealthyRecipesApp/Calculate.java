@@ -58,11 +58,11 @@ public class Calculate {
             Log.d(TAG, "fda.getMap().size():"+fda.getMap().size());
 
             name = (String) fda.getMap().get("NAME");
-            size = (Double) fda.getMap().get("SIZE");
-            cal = (Double) fda.getMap().get("CAL");
-            pt = (Double) fda.getMap().get("PROTEIN");
-            carbs = (Double) fda.getMap().get("CARBS");
-            fat = (Double) fda.getMap().get("FAT");
+            size = Double.parseDouble(fda.getMap().get("SIZE").toString());
+            cal = Double.parseDouble(fda.getMap().get("CAL").toString());
+            pt = Double.parseDouble(fda.getMap().get("PROTEIN").toString());
+            carbs = Double.parseDouble(fda.getMap().get("CARBS").toString());
+            fat = Double.parseDouble(fda.getMap().get("FAT").toString());
             Log.d(TAG, "name:"+name);
             Log.d(TAG, "size:"+size);
             Log.d(TAG, "cal:"+cal);
